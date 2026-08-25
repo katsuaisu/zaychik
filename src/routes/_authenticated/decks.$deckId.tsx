@@ -53,7 +53,7 @@ function DeckEditor() {
   const saveCard = useSaveCard(deckId);
 
   const [editing, setEditing] = useState<DeckCardRow | null>(null);
-  const [adding, setAdding] = useState(false);
+  const [addedCount, setAddedCount] = useState(0);
   const [dragIndex, setDragIndex] = useState<number | null>(null);
 
   const list = cards ?? [];
