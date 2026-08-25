@@ -10,6 +10,7 @@ import {
   gradeBand,
   honorFor,
   quarterGrade,
+  transmute,
   weightedGwa,
 } from "@/lib/gwa";
 import {
@@ -66,7 +67,12 @@ function GwaPage() {
   const rowsFor = (q: number) =>
     (subjects ?? []).map((s) => {
       const g = byKey.get(key(s.id, q));
-      const computed = quarterGrade(g?.previous_grade ?? null, g?.tentative_grade ?? null);
+      const computed =
+        q === 1
+          ? g?.tentative_grade == null
+            ? null
+            : transmute(g.tentative_grade)
+          : quarterGrade(g?.previous_grade ?? null, g?.tentative_grade ?? null);
       const grade = g?.final_grade ?? computed;
       return { subject: s, record: g, computed, grade };
     });
@@ -95,7 +101,9 @@ function GwaPage() {
     <div className="mx-auto w-full max-w-6xl px-4 py-6 sm:px-6 sm:py-8">
       <h1 className="text-3xl font-extrabold tracking-tight">GWA Calculator</h1>
       <p className="text-sm text-muted-foreground">
-        Quarter grade = ((Tentative × 2) + Previous) ÷ 3, transmuted. GWA is weighted by units.
+        {quarter === 1
+          ? "Q1 grade = Tentative, transmuted. GWA is weighted by units."
+          : "Quarter grade = ((Tentative × 2) + Previous) ÷ 3, transmuted. GWA is weighted by units."}
       </p>
 
       <div className="mt-5 flex gap-2 overflow-x-auto rounded-full bg-muted p-1">
@@ -156,23 +164,23 @@ function GwaPage() {
         </aside>
 
         <section className="card-soft overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="w-full min-w-[42rem] text-sm">
-              <thead className="bg-muted/60 text-left text-xs font-bold uppercase tracking-wide text-muted-foreground">
+          <div>
+            <table className="w-full table-fixed text-sm">
+              <thead className="bg-muted/60 text-left text-[11px] font-bold uppercase tracking-wide text-muted-foreground">
                 <tr>
-                  <th className="px-4 py-3">Subject</th>
-                  <th className="px-4 py-3">Units</th>
-                  <th className="px-4 py-3">Previous</th>
-                  <th className="px-4 py-3">Tentative</th>
-                  <th className="px-4 py-3">Final grade</th>
-                  <th className="px-4 py-3">Quarter grade</th>
-                  <th className="px-4 py-3" />
+                  <th className="px-2 py-3 sm:px-3">Subject</th>
+                  <th className="w-14 px-2 py-3 sm:w-16 sm:px-3">Units</th>
+                  {quarter !== 1 && <th className="w-20 px-2 py-3 sm:px-3">Prev</th>}
+                  <th className="w-20 px-2 py-3 sm:px-3">Tent.</th>
+                  <th className="w-24 px-2 py-3 sm:px-3">Final</th>
+                  <th className="w-20 px-2 py-3 sm:px-3">Grade</th>
+                  <th className="w-10 px-1 py-3" />
                 </tr>
               </thead>
               <tbody>
                 {currentRows.map(({ subject, record, computed, grade }) => (
                   <tr key={subject.id} className="border-t border-border">
-                    <td className="px-4 py-2">
+                    <td className="px-2 py-2 sm:px-3">
                       <input
                         defaultValue={subject.name}
                         onBlur={(e) => {
@@ -180,10 +188,10 @@ function GwaPage() {
                           if (name && name !== subject.name)
                             updateSubject.mutate({ id: subject.id, name });
                         }}
-                        className="min-h-10 w-40 rounded-xl border border-transparent px-2 font-semibold outline-none hover:border-border focus:border-brand"
+                        className="min-h-10 w-full rounded-xl border border-transparent px-2 font-semibold outline-none hover:border-border focus:border-brand"
                       />
                     </td>
-                    <td className="px-4 py-2">
+                    <td className="px-2 py-2 sm:px-3">
                       <input
                         type="number"
                         step="0.1"
@@ -194,26 +202,28 @@ function GwaPage() {
                           if (units > 0 && units !== subject.units)
                             updateSubject.mutate({ id: subject.id, units });
                         }}
-                        className="min-h-10 w-20 rounded-xl border border-border px-2 outline-none focus:border-brand"
+                        className="min-h-10 w-full rounded-xl border border-border px-2 outline-none focus:border-brand"
                       />
                     </td>
-                    <td className="px-4 py-2">
-                      <input
-                        type="number"
-                        step="0.01"
-                        placeholder="—"
-                        defaultValue={record?.previous_grade ?? ""}
-                        onBlur={(e) =>
-                          saveGrade.mutate({
-                            subject_id: subject.id,
-                            quarter,
-                            previous_grade: e.target.value === "" ? null : Number(e.target.value),
-                          })
-                        }
-                        className="min-h-10 w-24 rounded-xl border border-border px-2 outline-none focus:border-brand"
-                      />
-                    </td>
-                    <td className="px-4 py-2">
+                    {quarter !== 1 && (
+                      <td className="px-2 py-2 sm:px-3">
+                        <input
+                          type="number"
+                          step="0.01"
+                          placeholder="—"
+                          defaultValue={record?.previous_grade ?? ""}
+                          onBlur={(e) =>
+                            saveGrade.mutate({
+                              subject_id: subject.id,
+                              quarter,
+                              previous_grade: e.target.value === "" ? null : Number(e.target.value),
+                            })
+                          }
+                          className="min-h-10 w-full rounded-xl border border-border px-2 outline-none focus:border-brand"
+                        />
+                      </td>
+                    )}
+                    <td className="px-2 py-2 sm:px-3">
                       <input
                         type="number"
                         step="0.01"
@@ -226,10 +236,10 @@ function GwaPage() {
                             tentative_grade: e.target.value === "" ? null : Number(e.target.value),
                           })
                         }
-                        className="min-h-10 w-24 rounded-xl border border-border px-2 outline-none focus:border-brand"
+                        className="min-h-10 w-full rounded-xl border border-border px-2 outline-none focus:border-brand"
                       />
                     </td>
-                    <td className="px-4 py-2">
+                    <td className="px-2 py-2 sm:px-3">
                       <select
                         value={record?.final_grade ?? ""}
                         onChange={(e) =>
@@ -239,7 +249,7 @@ function GwaPage() {
                             final_grade: e.target.value === "" ? null : Number(e.target.value),
                           })
                         }
-                        className="min-h-10 w-28 rounded-xl border border-border px-2 outline-none focus:border-brand"
+                        className="min-h-10 w-full rounded-xl border border-border px-1 text-xs outline-none focus:border-brand"
                       >
                         <option value="">Auto ({fmt(computed)})</option>
                         {GRADE_VALUES.map((g) => (
@@ -249,12 +259,12 @@ function GwaPage() {
                         ))}
                       </select>
                     </td>
-                    <td className="px-4 py-2">
+                    <td className="px-2 py-2 sm:px-3">
                       {grade == null ? (
                         <span className="text-muted-foreground">—</span>
                       ) : (
                         <span
-                          className={`inline-block rounded-full px-3 py-1 text-xs font-bold ${
+                          className={`inline-block rounded-full px-2 py-1 text-xs font-bold ${
                             BAND_CLASS[gradeBand(grade)]
                           }`}
                         >
@@ -262,11 +272,11 @@ function GwaPage() {
                         </span>
                       )}
                     </td>
-                    <td className="px-4 py-2 text-right">
+                    <td className="px-1 py-2 text-right">
                       <button
                         aria-label={`Delete ${subject.name}`}
                         onClick={() => deleteSubject.mutate(subject.id)}
-                        className="grid h-10 w-10 place-items-center rounded-xl text-muted-foreground press hover:bg-muted hover:text-destructive"
+                        className="grid h-9 w-9 place-items-center rounded-xl text-muted-foreground press hover:bg-muted hover:text-destructive"
                       >
                         <Trash2 className="h-4 w-4" />
                       </button>
