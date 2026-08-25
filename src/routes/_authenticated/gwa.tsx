@@ -162,17 +162,17 @@ function GwaPage() {
         </aside>
 
         <section className="card-soft overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="w-full min-w-[42rem] text-sm">
-              <thead className="bg-muted/60 text-left text-xs font-bold uppercase tracking-wide text-muted-foreground">
+          <div>
+            <table className="w-full table-fixed text-sm">
+              <thead className="bg-muted/60 text-left text-[11px] font-bold uppercase tracking-wide text-muted-foreground">
                 <tr>
-                  <th className="px-4 py-3">Subject</th>
-                  <th className="px-4 py-3">Units</th>
-                  <th className="px-4 py-3">Previous</th>
-                  <th className="px-4 py-3">Tentative</th>
-                  <th className="px-4 py-3">Final grade</th>
-                  <th className="px-4 py-3">Quarter grade</th>
-                  <th className="px-4 py-3" />
+                  <th className="px-2 py-3 sm:px-3">Subject</th>
+                  <th className="w-14 px-2 py-3 sm:w-16 sm:px-3">Units</th>
+                  {quarter !== 1 && <th className="w-20 px-2 py-3 sm:px-3">Prev</th>}
+                  <th className="w-20 px-2 py-3 sm:px-3">Tent.</th>
+                  <th className="w-24 px-2 py-3 sm:px-3">Final</th>
+                  <th className="w-20 px-2 py-3 sm:px-3">Grade</th>
+                  <th className="w-10 px-1 py-3" />
                 </tr>
               </thead>
               <tbody>
