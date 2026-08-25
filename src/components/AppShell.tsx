@@ -10,8 +10,6 @@ import {
   Search,
   ChevronRight,
   LogOut,
-  PanelLeftClose,
-  PanelLeftOpen,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useQueryClient } from "@tanstack/react-query";
@@ -28,38 +26,7 @@ const NAV = [
   { to: "/gwa", label: "GWA Calculator", icon: Calculator },
 ] as const;
 
-function CollapsedRail({ onExpand }: { onExpand: () => void }) {
-  const pathname = useRouterState({ select: (s) => s.location.pathname });
-  return (
-    <div className="flex h-full flex-col items-center gap-2 px-2 py-6">
-      <button
-        aria-label="Expand sidebar"
-        onClick={onExpand}
-        className="grid h-11 w-11 place-items-center rounded-xl press hover:bg-muted"
-      >
-        <PanelLeftOpen className="h-5 w-5 text-muted-foreground" />
-      </button>
-      {NAV.map((item) => {
-        const active = pathname.startsWith(item.to);
-        return (
-          <Link
-            key={item.to}
-            to={item.to}
-            aria-label={item.label}
-            title={item.label}
-            className={`grid h-11 w-11 place-items-center rounded-xl press ${
-              active ? "bg-muted text-foreground" : "text-muted-foreground hover:bg-muted/60"
-            }`}
-          >
-            <item.icon className="h-5 w-5" />
-          </Link>
-        );
-      })}
-    </div>
-  );
-}
-
-function SidebarBody({ onNavigate, onCollapse }: { onNavigate?: () => void; onCollapse?: () => void }) {
+function SidebarBody({ onNavigate }: { onNavigate?: () => void }) {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const { data: decks } = useDecks();
   const [filter, setFilter] = useState("");
@@ -81,20 +48,9 @@ function SidebarBody({ onNavigate, onCollapse }: { onNavigate?: () => void; onCo
 
   return (
     <div className="flex h-full flex-col gap-5 overflow-y-auto px-4 py-6">
-      <div className="flex items-center justify-between gap-2 px-2">
-        <Link to="/decks" onClick={onNavigate}>
-          <GizmoLogo />
-        </Link>
-        {onCollapse && (
-          <button
-            aria-label="Collapse sidebar"
-            onClick={onCollapse}
-            className="grid h-9 w-9 place-items-center rounded-lg text-muted-foreground press hover:bg-muted"
-          >
-            <PanelLeftClose className="h-4 w-4" />
-          </button>
-        )}
-      </div>
+      <Link to="/decks" onClick={onNavigate} className="px-2">
+        <GizmoLogo />
+      </Link>
 
       <nav className="flex flex-col gap-1">
         {NAV.map((item) => {
@@ -207,22 +163,13 @@ function SidebarBody({ onNavigate, onCollapse }: { onNavigate?: () => void; onCo
 
 export function AppShell({ children }: { children: ReactNode }) {
   const [open, setOpen] = useState(false);
-  const [collapsed, setCollapsed] = useState(false);
 
   return (
     <div className="flex min-h-screen flex-col bg-background">
       <div className="h-2 w-full shrink-0 edge-gradient" />
       <div className="flex min-h-0 flex-1">
-        <aside
-          className={`hidden shrink-0 border-r border-border bg-card transition-all lg:block ${
-            collapsed ? "w-16" : "w-72"
-          }`}
-        >
-          {collapsed ? (
-            <CollapsedRail onExpand={() => setCollapsed(false)} />
-          ) : (
-            <SidebarBody onCollapse={() => setCollapsed(true)} />
-          )}
+        <aside className="hidden w-72 shrink-0 border-r border-border bg-card lg:block">
+          <SidebarBody />
         </aside>
 
         <div className="flex min-w-0 flex-1 flex-col">
