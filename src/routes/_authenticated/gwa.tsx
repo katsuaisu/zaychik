@@ -10,6 +10,7 @@ import {
   gradeBand,
   honorFor,
   quarterGrade,
+  transmute,
   weightedGwa,
 } from "@/lib/gwa";
 import {
