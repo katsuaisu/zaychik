@@ -14,7 +14,7 @@ import {
 } from "@/lib/queries";
 import { CARD_STATUS, CARD_TYPES, DECK_COLORS, colorHex } from "@/lib/deck-colors";
 import { blankAnswers, matchingPairs, orderItems } from "@/lib/card-data";
-import { CardEditorDialog } from "@/components/CardEditorDialog";
+import { CardEditorForm } from "@/components/CardEditorForm";
 
 export const Route = createFileRoute("/_authenticated/decks/$deckId")({
   head: () => ({
@@ -53,7 +53,7 @@ function DeckEditor() {
   const saveCard = useSaveCard(deckId);
 
   const [editing, setEditing] = useState<DeckCardRow | null>(null);
-  const [adding, setAdding] = useState(false);
+  const [addedCount, setAddedCount] = useState(0);
   const [dragIndex, setDragIndex] = useState<number | null>(null);
 
   const list = cards ?? [];
@@ -103,7 +103,11 @@ function DeckEditor() {
             <Play className="h-4 w-4" /> Study
           </Link>
           <button
-            onClick={() => setAdding(true)}
+            onClick={() => {
+              const el = document.getElementById("quick-add");
+              el?.scrollIntoView({ behavior: "smooth", block: "center" });
+              el?.querySelector<HTMLTextAreaElement>("textarea")?.focus();
+            }}
             className="inline-flex min-h-12 items-center gap-2 rounded-full border border-border px-5 text-[15px] font-bold press hover:bg-muted/60"
           >
             <Plus className="h-5 w-5" /> Add card
@@ -200,22 +204,50 @@ function DeckEditor() {
 
         {/* Cards */}
         <section className="flex flex-col gap-3">
-          {list.length === 0 && (
-            <div className="card-soft p-10 text-center">
-              <h2 className="text-xl font-extrabold">No cards yet</h2>
-              <p className="mt-1 text-sm text-muted-foreground">
-                Add your first card to start studying this deck.
-              </p>
-              <button
-                onClick={() => setAdding(true)}
-                className="mt-5 inline-flex min-h-12 items-center gap-2 rounded-full bg-brand px-5 text-[15px] font-bold text-brand-foreground press hover:opacity-90"
-              >
-                <Plus className="h-5 w-5" /> Add card
-              </button>
+          {/* Always-on quick add: type it, hit Add card, keep going. */}
+          <div id="quick-add" className="card-soft p-4 sm:p-5">
+            <div className="mb-3 flex items-center gap-2">
+              <Plus className="h-5 w-5 text-brand" />
+              <h2 className="text-lg font-extrabold tracking-tight">Quick add a card</h2>
             </div>
+            <CardEditorForm
+              key={`new-${addedCount}`}
+              card={null}
+              defaultType={deck.default_type}
+              position={list.length}
+              onSave={async (input) => {
+                await saveCard.mutateAsync(input);
+                setAddedCount((n) => n + 1);
+              }}
+            />
+          </div>
+
+          {list.length === 0 && (
+            <p className="px-1 text-sm text-muted-foreground">
+              No cards yet — add your first one above.
+            </p>
           )}
 
           {list.map((card, i) => {
+            if (editing?.id === card.id) {
+              return (
+                <div key={card.id} className="card-soft border-brand/40 p-4 sm:p-5">
+                  <h3 className="mb-3 text-sm font-bold text-muted-foreground">Editing card</h3>
+                  <CardEditorForm
+                    key={`edit-${card.id}`}
+                    card={card}
+                    defaultType={deck.default_type}
+                    position={i}
+                    autoFocus
+                    onCancel={() => setEditing(null)}
+                    onSave={async (input) => {
+                      await saveCard.mutateAsync(input);
+                      setEditing(null);
+                    }}
+                  />
+                </div>
+              );
+            }
             const status = CARD_STATUS[(card.status as keyof typeof CARD_STATUS) ?? "new"] ?? CARD_STATUS.new;
             return (
               <article
@@ -288,23 +320,6 @@ function DeckEditor() {
         </section>
       </div>
 
-      <CardEditorDialog
-        open={adding || editing !== null}
-        onOpenChange={(v) => {
-          if (!v) {
-            setAdding(false);
-            setEditing(null);
-          }
-        }}
-        card={editing}
-        defaultType={deck.default_type}
-        position={list.length}
-        onSave={async (input) => {
-          await saveCard.mutateAsync(input);
-          setAdding(false);
-          setEditing(null);
-        }}
-      />
     </div>
   );
 }
