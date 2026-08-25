@@ -79,9 +79,20 @@ function SidebarBody({ onNavigate, onCollapse }: { onNavigate?: () => void; onCo
 
   return (
     <div className="flex h-full flex-col gap-5 overflow-y-auto px-4 py-6">
-      <Link to="/decks" onClick={onNavigate} className="px-2">
-        <GizmoLogo />
-      </Link>
+      <div className="flex items-center justify-between gap-2 px-2">
+        <Link to="/decks" onClick={onNavigate}>
+          <GizmoLogo />
+        </Link>
+        {onCollapse && (
+          <button
+            aria-label="Collapse sidebar"
+            onClick={onCollapse}
+            className="grid h-9 w-9 place-items-center rounded-lg text-muted-foreground press hover:bg-muted"
+          >
+            <PanelLeftClose className="h-4 w-4" />
+          </button>
+        )}
+      </div>
 
       <nav className="flex flex-col gap-1">
         {NAV.map((item) => {
