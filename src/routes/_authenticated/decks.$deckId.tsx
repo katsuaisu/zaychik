@@ -103,7 +103,11 @@ function DeckEditor() {
             <Play className="h-4 w-4" /> Study
           </Link>
           <button
-            onClick={() => setAdding(true)}
+            onClick={() => {
+              const el = document.getElementById("quick-add");
+              el?.scrollIntoView({ behavior: "smooth", block: "center" });
+              el?.querySelector<HTMLTextAreaElement>("textarea")?.focus();
+            }}
             className="inline-flex min-h-12 items-center gap-2 rounded-full border border-border px-5 text-[15px] font-bold press hover:bg-muted/60"
           >
             <Plus className="h-5 w-5" /> Add card
