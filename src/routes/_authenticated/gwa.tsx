@@ -178,7 +178,7 @@ function GwaPage() {
               <tbody>
                 {currentRows.map(({ subject, record, computed, grade }) => (
                   <tr key={subject.id} className="border-t border-border">
-                    <td className="px-4 py-2">
+                    <td className="px-2 py-2 sm:px-3">
                       <input
                         defaultValue={subject.name}
                         onBlur={(e) => {
@@ -186,10 +186,10 @@ function GwaPage() {
                           if (name && name !== subject.name)
                             updateSubject.mutate({ id: subject.id, name });
                         }}
-                        className="min-h-10 w-40 rounded-xl border border-transparent px-2 font-semibold outline-none hover:border-border focus:border-brand"
+                        className="min-h-10 w-full rounded-xl border border-transparent px-2 font-semibold outline-none hover:border-border focus:border-brand"
                       />
                     </td>
-                    <td className="px-4 py-2">
+                    <td className="px-2 py-2 sm:px-3">
                       <input
                         type="number"
                         step="0.1"
@@ -200,26 +200,28 @@ function GwaPage() {
                           if (units > 0 && units !== subject.units)
                             updateSubject.mutate({ id: subject.id, units });
                         }}
-                        className="min-h-10 w-20 rounded-xl border border-border px-2 outline-none focus:border-brand"
+                        className="min-h-10 w-full rounded-xl border border-border px-2 outline-none focus:border-brand"
                       />
                     </td>
-                    <td className="px-4 py-2">
-                      <input
-                        type="number"
-                        step="0.01"
-                        placeholder="—"
-                        defaultValue={record?.previous_grade ?? ""}
-                        onBlur={(e) =>
-                          saveGrade.mutate({
-                            subject_id: subject.id,
-                            quarter,
-                            previous_grade: e.target.value === "" ? null : Number(e.target.value),
-                          })
-                        }
-                        className="min-h-10 w-24 rounded-xl border border-border px-2 outline-none focus:border-brand"
-                      />
-                    </td>
-                    <td className="px-4 py-2">
+                    {quarter !== 1 && (
+                      <td className="px-2 py-2 sm:px-3">
+                        <input
+                          type="number"
+                          step="0.01"
+                          placeholder="—"
+                          defaultValue={record?.previous_grade ?? ""}
+                          onBlur={(e) =>
+                            saveGrade.mutate({
+                              subject_id: subject.id,
+                              quarter,
+                              previous_grade: e.target.value === "" ? null : Number(e.target.value),
+                            })
+                          }
+                          className="min-h-10 w-full rounded-xl border border-border px-2 outline-none focus:border-brand"
+                        />
+                      </td>
+                    )}
+                    <td className="px-2 py-2 sm:px-3">
                       <input
                         type="number"
                         step="0.01"
@@ -232,10 +234,10 @@ function GwaPage() {
                             tentative_grade: e.target.value === "" ? null : Number(e.target.value),
                           })
                         }
-                        className="min-h-10 w-24 rounded-xl border border-border px-2 outline-none focus:border-brand"
+                        className="min-h-10 w-full rounded-xl border border-border px-2 outline-none focus:border-brand"
                       />
                     </td>
-                    <td className="px-4 py-2">
+                    <td className="px-2 py-2 sm:px-3">
                       <select
                         value={record?.final_grade ?? ""}
                         onChange={(e) =>
@@ -245,7 +247,7 @@ function GwaPage() {
                             final_grade: e.target.value === "" ? null : Number(e.target.value),
                           })
                         }
-                        className="min-h-10 w-28 rounded-xl border border-border px-2 outline-none focus:border-brand"
+                        className="min-h-10 w-full rounded-xl border border-border px-1 text-xs outline-none focus:border-brand"
                       >
                         <option value="">Auto ({fmt(computed)})</option>
                         {GRADE_VALUES.map((g) => (
@@ -255,12 +257,12 @@ function GwaPage() {
                         ))}
                       </select>
                     </td>
-                    <td className="px-4 py-2">
+                    <td className="px-2 py-2 sm:px-3">
                       {grade == null ? (
                         <span className="text-muted-foreground">—</span>
                       ) : (
                         <span
-                          className={`inline-block rounded-full px-3 py-1 text-xs font-bold ${
+                          className={`inline-block rounded-full px-2 py-1 text-xs font-bold ${
                             BAND_CLASS[gradeBand(grade)]
                           }`}
                         >
@@ -268,11 +270,11 @@ function GwaPage() {
                         </span>
                       )}
                     </td>
-                    <td className="px-4 py-2 text-right">
+                    <td className="px-1 py-2 text-right">
                       <button
                         aria-label={`Delete ${subject.name}`}
                         onClick={() => deleteSubject.mutate(subject.id)}
-                        className="grid h-10 w-10 place-items-center rounded-xl text-muted-foreground press hover:bg-muted hover:text-destructive"
+                        className="grid h-9 w-9 place-items-center rounded-xl text-muted-foreground press hover:bg-muted hover:text-destructive"
                       >
                         <Trash2 className="h-4 w-4" />
                       </button>
