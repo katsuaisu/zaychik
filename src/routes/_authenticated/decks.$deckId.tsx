@@ -14,7 +14,7 @@ import {
 } from "@/lib/queries";
 import { CARD_STATUS, CARD_TYPES, DECK_COLORS, colorHex } from "@/lib/deck-colors";
 import { blankAnswers, matchingPairs, orderItems } from "@/lib/card-data";
-import { CardEditorDialog } from "@/components/CardEditorDialog";
+import { CardEditorForm } from "@/components/CardEditorForm";
 
 export const Route = createFileRoute("/_authenticated/decks/$deckId")({
   head: () => ({
