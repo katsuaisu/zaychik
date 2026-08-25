@@ -66,7 +66,12 @@ function GwaPage() {
   const rowsFor = (q: number) =>
     (subjects ?? []).map((s) => {
       const g = byKey.get(key(s.id, q));
-      const computed = quarterGrade(g?.previous_grade ?? null, g?.tentative_grade ?? null);
+      const computed =
+        q === 1
+          ? g?.tentative_grade == null
+            ? null
+            : transmute(g.tentative_grade)
+          : quarterGrade(g?.previous_grade ?? null, g?.tentative_grade ?? null);
       const grade = g?.final_grade ?? computed;
       return { subject: s, record: g, computed, grade };
     });
