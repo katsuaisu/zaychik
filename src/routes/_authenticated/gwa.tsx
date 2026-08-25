@@ -101,7 +101,9 @@ function GwaPage() {
     <div className="mx-auto w-full max-w-6xl px-4 py-6 sm:px-6 sm:py-8">
       <h1 className="text-3xl font-extrabold tracking-tight">GWA Calculator</h1>
       <p className="text-sm text-muted-foreground">
-        Quarter grade = ((Tentative × 2) + Previous) ÷ 3, transmuted. GWA is weighted by units.
+        {quarter === 1
+          ? "Q1 grade = Tentative, transmuted. GWA is weighted by units."
+          : "Quarter grade = ((Tentative × 2) + Previous) ÷ 3, transmuted. GWA is weighted by units."}
       </p>
 
       <div className="mt-5 flex gap-2 overflow-x-auto rounded-full bg-muted p-1">
