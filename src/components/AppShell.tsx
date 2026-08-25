@@ -207,13 +207,22 @@ function SidebarBody({ onNavigate, onCollapse }: { onNavigate?: () => void; onCo
 
 export function AppShell({ children }: { children: ReactNode }) {
   const [open, setOpen] = useState(false);
+  const [collapsed, setCollapsed] = useState(false);
 
   return (
     <div className="flex min-h-screen flex-col bg-background">
       <div className="h-2 w-full shrink-0 edge-gradient" />
       <div className="flex min-h-0 flex-1">
-        <aside className="hidden w-72 shrink-0 border-r border-border bg-card lg:block">
-          <SidebarBody />
+        <aside
+          className={`hidden shrink-0 border-r border-border bg-card transition-all lg:block ${
+            collapsed ? "w-16" : "w-72"
+          }`}
+        >
+          {collapsed ? (
+            <CollapsedRail onExpand={() => setCollapsed(false)} />
+          ) : (
+            <SidebarBody onCollapse={() => setCollapsed(true)} />
+          )}
         </aside>
 
         <div className="flex min-w-0 flex-1 flex-col">
