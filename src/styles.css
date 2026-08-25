@@ -19,6 +19,23 @@
  */
 
 @theme inline {
+  --font-sans: "Poppins", "DM Sans", ui-sans-serif, system-ui, sans-serif;
+  --color-brand: var(--brand);
+  --color-brand-foreground: var(--brand-foreground);
+  --color-deck-pink: #f472b6;
+  --color-deck-orange: #f97316;
+  --color-deck-coral: #f0555a;
+  --color-deck-purple: #b794f6;
+  --color-deck-teal: #5eead4;
+  --color-deck-periwinkle: #818cf8;
+  --color-band-excellent: var(--band-excellent);
+  --color-band-good: var(--band-good);
+  --color-band-average: var(--band-average);
+  --color-band-poor: var(--band-poor);
+  --color-status-new: var(--status-new);
+  --color-status-learning: var(--status-learning);
+  --color-status-forgotten: var(--status-forgotten);
+  --color-status-mastered: var(--status-mastered);
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
@@ -62,7 +79,24 @@
 }
 
 :root {
-  --radius: 0.625rem;
+  --radius: 1rem;
+  --brand: oklch(0.28 0.06 280);
+  --brand-foreground: oklch(0.99 0 0);
+  --band-excellent: oklch(0.6 0.15 155);
+  --band-good: oklch(0.63 0.2 340);
+  --band-average: oklch(0.68 0.16 55);
+  --band-poor: oklch(0.6 0.21 25);
+  --status-new: oklch(0.6 0.18 255);
+  --status-learning: oklch(0.62 0.15 155);
+  --status-forgotten: oklch(0.6 0.02 260);
+  --status-mastered: oklch(0.75 0.15 80);
+  --gradient-edge: linear-gradient(
+    90deg,
+    oklch(0.93 0.05 300),
+    oklch(0.9 0.06 275),
+    oklch(0.94 0.04 330)
+  );
+  --shadow-card: 0 6px 20px -8px oklch(0.28 0.06 280 / 0.18);
   --background: oklch(1 0 0);
   --foreground: oklch(0.129 0.042 264.695);
   --card: oklch(1 0 0);
@@ -140,5 +174,77 @@
   body {
     background-color: var(--color-background);
     color: var(--color-foreground);
+    font-family: var(--font-sans);
+    -webkit-tap-highlight-color: transparent;
   }
+}
+
+@utility edge-gradient {
+  background: var(--gradient-edge);
+}
+
+@utility card-soft {
+  border-radius: var(--radius-2xl);
+  box-shadow: var(--shadow-card);
+  border: 1px solid var(--color-border);
+  background-color: var(--color-card);
+}
+
+@utility press {
+  transition:
+    transform 0.15s ease,
+    background-color 0.15s ease,
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
+  &:active {
+    transform: scale(0.97);
+  }
+}
+
+@keyframes card-in {
+  from {
+    opacity: 0;
+    transform: translateY(14px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@utility animate-card-in {
+  animation: card-in 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@keyframes flip-in {
+  from {
+    opacity: 0;
+    transform: rotateX(-70deg);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@utility animate-flip-in {
+  animation: flip-in 0.35s ease-out;
+  transform-style: preserve-3d;
+}
+
+@keyframes wiggle {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-5px);
+  }
+  75% {
+    transform: translateX(5px);
+  }
+}
+
+@utility animate-wiggle {
+  animation: wiggle 0.32s ease-in-out;
 }

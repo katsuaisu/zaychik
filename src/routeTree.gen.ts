@@ -10,33 +10,133 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
+import { Route as AuthRouteImport } from './routes/auth'
+import { Route as AuthenticatedGwaRouteImport } from './routes/_authenticated/gwa'
+import { Route as AuthenticatedProgressRouteImport } from './routes/_authenticated/progress'
+import { Route as AuthenticatedPublicDecksRouteImport } from './routes/_authenticated/public-decks'
+import { Route as AuthenticatedDecksIndexRouteImport } from './routes/_authenticated/decks.index'
+import { Route as AuthenticatedDecksDeckIdRouteImport } from './routes/_authenticated/decks.$deckId'
+import { Route as AuthenticatedStudyDeckIdRouteImport } from './routes/_authenticated/study.$deckId'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
+  id: '/_authenticated',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedGwaRoute = AuthenticatedGwaRouteImport.update({
+  id: '/gwa',
+  path: '/gwa',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedProgressRoute = AuthenticatedProgressRouteImport.update({
+  id: '/progress',
+  path: '/progress',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedPublicDecksRoute =
+  AuthenticatedPublicDecksRouteImport.update({
+    id: '/public-decks',
+    path: '/public-decks',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedDecksIndexRoute = AuthenticatedDecksIndexRouteImport.update({
+  id: '/decks/',
+  path: '/decks/',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedDecksDeckIdRoute =
+  AuthenticatedDecksDeckIdRouteImport.update({
+    id: '/decks/$deckId',
+    path: '/decks/$deckId',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedStudyDeckIdRoute =
+  AuthenticatedStudyDeckIdRouteImport.update({
+    id: '/study/$deckId',
+    path: '/study/$deckId',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
+  '/gwa': typeof AuthenticatedGwaRoute
+  '/progress': typeof AuthenticatedProgressRoute
+  '/public-decks': typeof AuthenticatedPublicDecksRoute
+  '/decks/$deckId': typeof AuthenticatedDecksDeckIdRoute
+  '/study/$deckId': typeof AuthenticatedStudyDeckIdRoute
+  '/decks/': typeof AuthenticatedDecksIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
+  '/gwa': typeof AuthenticatedGwaRoute
+  '/progress': typeof AuthenticatedProgressRoute
+  '/public-decks': typeof AuthenticatedPublicDecksRoute
+  '/decks/$deckId': typeof AuthenticatedDecksDeckIdRoute
+  '/study/$deckId': typeof AuthenticatedStudyDeckIdRoute
+  '/decks': typeof AuthenticatedDecksIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
+  '/auth': typeof AuthRoute
+  '/_authenticated/gwa': typeof AuthenticatedGwaRoute
+  '/_authenticated/progress': typeof AuthenticatedProgressRoute
+  '/_authenticated/public-decks': typeof AuthenticatedPublicDecksRoute
+  '/_authenticated/decks/$deckId': typeof AuthenticatedDecksDeckIdRoute
+  '/_authenticated/study/$deckId': typeof AuthenticatedStudyDeckIdRoute
+  '/_authenticated/decks/': typeof AuthenticatedDecksIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/auth'
+    | '/gwa'
+    | '/progress'
+    | '/public-decks'
+    | '/decks/$deckId'
+    | '/study/$deckId'
+    | '/decks/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/auth'
+    | '/gwa'
+    | '/progress'
+    | '/public-decks'
+    | '/decks/$deckId'
+    | '/study/$deckId'
+    | '/decks'
+  id:
+    | '__root__'
+    | '/'
+    | '/_authenticated'
+    | '/auth'
+    | '/_authenticated/gwa'
+    | '/_authenticated/progress'
+    | '/_authenticated/public-decks'
+    | '/_authenticated/decks/$deckId'
+    | '/_authenticated/study/$deckId'
+    | '/_authenticated/decks/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
+  AuthRoute: typeof AuthRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,11 +148,90 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/gwa': {
+      id: '/_authenticated/gwa'
+      path: '/gwa'
+      fullPath: '/gwa'
+      preLoaderRoute: typeof AuthenticatedGwaRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/progress': {
+      id: '/_authenticated/progress'
+      path: '/progress'
+      fullPath: '/progress'
+      preLoaderRoute: typeof AuthenticatedProgressRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/public-decks': {
+      id: '/_authenticated/public-decks'
+      path: '/public-decks'
+      fullPath: '/public-decks'
+      preLoaderRoute: typeof AuthenticatedPublicDecksRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/decks/': {
+      id: '/_authenticated/decks/'
+      path: '/decks'
+      fullPath: '/decks/'
+      preLoaderRoute: typeof AuthenticatedDecksIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/decks/$deckId': {
+      id: '/_authenticated/decks/$deckId'
+      path: '/decks/$deckId'
+      fullPath: '/decks/$deckId'
+      preLoaderRoute: typeof AuthenticatedDecksDeckIdRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/study/$deckId': {
+      id: '/_authenticated/study/$deckId'
+      path: '/study/$deckId'
+      fullPath: '/study/$deckId'
+      preLoaderRoute: typeof AuthenticatedStudyDeckIdRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
   }
 }
 
+interface AuthenticatedRouteRouteChildren {
+  AuthenticatedGwaRoute: typeof AuthenticatedGwaRoute
+  AuthenticatedProgressRoute: typeof AuthenticatedProgressRoute
+  AuthenticatedPublicDecksRoute: typeof AuthenticatedPublicDecksRoute
+  AuthenticatedDecksDeckIdRoute: typeof AuthenticatedDecksDeckIdRoute
+  AuthenticatedStudyDeckIdRoute: typeof AuthenticatedStudyDeckIdRoute
+  AuthenticatedDecksIndexRoute: typeof AuthenticatedDecksIndexRoute
+}
+
+const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedGwaRoute: AuthenticatedGwaRoute,
+  AuthenticatedProgressRoute: AuthenticatedProgressRoute,
+  AuthenticatedPublicDecksRoute: AuthenticatedPublicDecksRoute,
+  AuthenticatedDecksDeckIdRoute: AuthenticatedDecksDeckIdRoute,
+  AuthenticatedStudyDeckIdRoute: AuthenticatedStudyDeckIdRoute,
+  AuthenticatedDecksIndexRoute: AuthenticatedDecksIndexRoute,
+}
+
+const AuthenticatedRouteRouteWithChildren =
+  AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
+  AuthRoute: AuthRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
