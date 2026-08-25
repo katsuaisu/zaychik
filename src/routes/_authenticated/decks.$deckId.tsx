@@ -288,23 +288,6 @@ function DeckEditor() {
         </section>
       </div>
 
-      <CardEditorDialog
-        open={adding || editing !== null}
-        onOpenChange={(v) => {
-          if (!v) {
-            setAdding(false);
-            setEditing(null);
-          }
-        }}
-        card={editing}
-        defaultType={deck.default_type}
-        position={list.length}
-        onSave={async (input) => {
-          await saveCard.mutateAsync(input);
-          setAdding(false);
-          setEditing(null);
-        }}
-      />
     </div>
   );
 }
