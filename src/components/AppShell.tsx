@@ -26,7 +26,38 @@ const NAV = [
   { to: "/gwa", label: "GWA Calculator", icon: Calculator },
 ] as const;
 
-function SidebarBody({ onNavigate }: { onNavigate?: () => void }) {
+function CollapsedRail({ onExpand }: { onExpand: () => void }) {
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
+  return (
+    <div className="flex h-full flex-col items-center gap-2 px-2 py-6">
+      <button
+        aria-label="Expand sidebar"
+        onClick={onExpand}
+        className="grid h-11 w-11 place-items-center rounded-xl press hover:bg-muted"
+      >
+        <PanelLeftOpen className="h-5 w-5 text-muted-foreground" />
+      </button>
+      {NAV.map((item) => {
+        const active = pathname.startsWith(item.to);
+        return (
+          <Link
+            key={item.to}
+            to={item.to}
+            aria-label={item.label}
+            title={item.label}
+            className={`grid h-11 w-11 place-items-center rounded-xl press ${
+              active ? "bg-muted text-foreground" : "text-muted-foreground hover:bg-muted/60"
+            }`}
+          >
+            <item.icon className="h-5 w-5" />
+          </Link>
+        );
+      })}
+    </div>
+  );
+}
+
+function SidebarBody({ onNavigate, onCollapse }: { onNavigate?: () => void; onCollapse?: () => void }) {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const { data: decks } = useDecks();
   const [filter, setFilter] = useState("");
