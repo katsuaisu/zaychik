@@ -59,9 +59,13 @@ export function transmute(raw: number): number {
   return best;
 }
 
-/** Quarter Grade = ((Tentative × 2) + Previous) ÷ 3, then transmuted. */
+/**
+ * Q1 has no tentative grade — the entered grade IS the quarter grade.
+ * Q2–Q4: Quarter Grade = ((Tentative × 2) + Previous) ÷ 3, then transmuted.
+ */
 export function quarterGrade(previous: number | null, tentative: number | null): number | null {
-  if (previous == null || tentative == null) return null;
+  if (tentative == null) return previous;
+  if (previous == null) return null;
   return transmute((tentative * 2 + previous) / 3);
 }
 
