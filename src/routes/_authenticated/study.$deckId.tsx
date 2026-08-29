@@ -1,8 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import {
-  Heart,
-  KeyRound,
   Share2,
   SkipBack,
   SkipForward,
@@ -14,6 +12,7 @@ import {
 import { useCards, useDeck, useSaveResult, useSetCardStatus, type Card } from "@/lib/queries";
 import { CARD_STATUS, colorHex } from "@/lib/deck-colors";
 import { playSound, setSoundEnabled, soundEnabled } from "@/lib/sounds";
+import { shuffle } from "@/lib/card-data";
 import { ClassicCard } from "@/components/study/ClassicCard";
 import { BlanksCard } from "@/components/study/BlanksCard";
 import { OrderCard } from "@/components/study/OrderCard";
@@ -36,8 +35,6 @@ export const Route = createFileRoute("/_authenticated/study/$deckId")({
 });
 
 const XP_PER_CORRECT = 10;
-const START_LIVES = 3;
-const START_HINTS = 3;
 
 function StudyRunner() {
   const { deckId } = Route.useParams();
@@ -50,8 +47,6 @@ function StudyRunner() {
   const [index, setIndex] = useState(0);
   const [score, setScore] = useState(0);
   const [xp, setXp] = useState(0);
-  const [lives, setLives] = useState(START_LIVES);
-  const [hints, setHints] = useState(START_HINTS);
   const [mastered, setMastered] = useState<string[]>([]);
   const [forgotten, setForgotten] = useState<string[]>([]);
   const [done, setDone] = useState(false);
@@ -62,7 +57,8 @@ function StudyRunner() {
 
   useEffect(() => setMuted(!soundEnabled()), []);
 
-  const list = useMemo(() => cards ?? [], [cards]);
+  // Every session (and every replay) shows the cards in a fresh random order.
+  const list = useMemo(() => shuffle(cards ?? []), [cards, round]);
   const total = list.length;
   const current: Card | undefined = list[index];
   const accent = colorHex(deck?.color);
@@ -88,7 +84,6 @@ function StudyRunner() {
       setForgotten((prev) => prev.filter((id) => id !== current.id));
     } else {
       setForgotten((prev) => (prev.includes(current.id) ? prev : [...prev, current.id]));
-      setLives((l) => Math.max(0, l - 1));
     }
     setStatus.mutate({ id: current.id, status: correct ? "mastered" : "forgotten" });
 
@@ -100,8 +95,6 @@ function StudyRunner() {
     setIndex(0);
     setScore(0);
     setXp(0);
-    setLives(START_LIVES);
-    setHints(START_HINTS);
     setMastered([]);
     setForgotten([]);
     setDone(false);
@@ -215,12 +208,6 @@ function StudyRunner() {
         </button>
 
         <div className="flex items-center gap-2">
-          <span className="inline-flex min-h-9 items-center gap-1.5 rounded-full border border-border px-3 text-sm font-bold">
-            <KeyRound className="h-4 w-4 text-status-mastered" /> {hints}
-          </span>
-          <span className="inline-flex min-h-9 items-center gap-1.5 rounded-full border border-border px-3 text-sm font-bold">
-            <Heart className="h-4 w-4 text-destructive" /> {lives}
-          </span>
           <span
             className="inline-flex min-h-9 items-center rounded-full px-3 text-sm font-extrabold"
             style={{ backgroundColor: `${accent}33` }}
@@ -259,14 +246,6 @@ function StudyRunner() {
             <div className="flex flex-col gap-4">
               <StatusLabel status={current.status} />
               <CardBody key={`${current.id}-${round}`} card={current} accent={accent} onResult={handleResult} />
-              {hints > 0 && (
-                <button
-                  onClick={() => setHints((h) => Math.max(0, h - 1))}
-                  className="inline-flex min-h-11 w-fit items-center gap-2 rounded-full border border-border px-4 text-sm font-bold press hover:bg-muted/60"
-                >
-                  🔑 Use a hint ({hints} left)
-                </button>
-              )}
             </div>
           )
         )}
