@@ -19,11 +19,18 @@ export type QuarterGrade = {
   tentative_grade: number | null;
 };
 
+export type Folder = {
+  id: string;
+  name: string;
+  position: number;
+};
+
 export type Deck = {
   id: string;
   name: string;
   color: string;
   subject_id: string | null;
+  folder_id: string | null;
   default_type: string;
   is_public: boolean;
   created_at: string;
@@ -147,7 +154,7 @@ export function useDecks() {
     queryFn: async (): Promise<(Deck & { count: number })[]> => {
       const { data, error } = await supabase
         .from("decks")
-        .select("id,name,color,subject_id,default_type,is_public,created_at,cards(count)")
+        .select("id,name,color,subject_id,folder_id,default_type,is_public,created_at,cards(count)")
         .order("created_at");
       if (error) throw error;
       return (data ?? []).map((d) => {
@@ -164,7 +171,7 @@ export function usePublicDecks() {
     queryFn: async (): Promise<(Deck & { count: number })[]> => {
       const { data, error } = await supabase
         .from("decks")
-        .select("id,name,color,subject_id,default_type,is_public,created_at,cards(count)")
+        .select("id,name,color,subject_id,folder_id,default_type,is_public,created_at,cards(count)")
         .eq("is_public", true)
         .order("created_at");
       if (error) throw error;
@@ -182,7 +189,7 @@ export function useDeck(deckId: string) {
     queryFn: async (): Promise<Deck> => {
       const { data, error } = await supabase
         .from("decks")
-        .select("id,name,color,subject_id,default_type,is_public,created_at")
+        .select("id,name,color,subject_id,folder_id,default_type,is_public,created_at")
         .eq("id", deckId)
         .single();
       if (error) throw error;
@@ -213,6 +220,7 @@ export function useCreateDeck() {
       name: string;
       color: string;
       subject_id?: string | null;
+      folder_id?: string | null;
       default_type?: string;
     }) => {
       const user_id = await uid();
@@ -223,6 +231,7 @@ export function useCreateDeck() {
           name: input.name,
           color: input.color,
           subject_id: input.subject_id ?? null,
+          folder_id: input.folder_id ?? null,
           default_type: input.default_type ?? "classic",
         })
         .select("id")
@@ -430,5 +439,80 @@ export function useCopyDeck() {
       qc.invalidateQueries({ queryKey: ["decks"] });
       qc.invalidateQueries({ queryKey: ["card_statuses"] });
     },
+  });
+}
+
+
+export function useFolders() {
+  return useQuery({
+    queryKey: ["folders"],
+    queryFn: async (): Promise<Folder[]> => {
+      const { data, error } = await supabase
+        .from("folders")
+        .select("id,name,position")
+        .order("position")
+        .order("name");
+      if (error) throw error;
+      return (data ?? []) as Folder[];
+    },
+  });
+}
+
+export function useCreateFolder() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (input: { name: string; position?: number }) => {
+      const user_id = await uid();
+      const { data, error } = await supabase
+        .from("folders")
+        .insert({ user_id, name: input.name, position: input.position ?? 0 })
+        .select("id")
+        .single();
+      if (error) throw error;
+      return data.id as string;
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["folders"] }),
+  });
+}
+
+export function useRenameFolder() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (input: { id: string; name: string }) => {
+      const { error } = await supabase
+        .from("folders")
+        .update({ name: input.name })
+        .eq("id", input.id);
+      if (error) throw error;
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["folders"] }),
+  });
+}
+
+export function useDeleteFolder() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase.from("folders").delete().eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["folders"] });
+      qc.invalidateQueries({ queryKey: ["decks"] });
+    },
+  });
+}
+
+export function useMoveDeckToFolder() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (input: { id: string; folder_id: string | null }) => {
+      const { error } = await supabase
+        .from("decks")
+        .update({ folder_id: input.folder_id })
+        .eq("id", input.id);
+      if (error) throw error;
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["decks"] }),
   });
 }
