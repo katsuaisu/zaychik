@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { DECK_COLORS, CARD_TYPES, type DeckColorKey } from "@/lib/deck-colors";
-import { useCreateDeck, useSubjects } from "@/lib/queries";
+import { useCreateDeck, useFolders, useSubjects } from "@/lib/queries";
 
 export function NewDeckDialog({
   open,
@@ -15,6 +15,8 @@ export function NewDeckDialog({
   const [color, setColor] = useState<DeckColorKey>("pink");
   const [subjectId, setSubjectId] = useState<string>("");
   const [type, setType] = useState<string>("classic");
+  const [folderId, setFolderId] = useState<string>("");
+  const { data: folders } = useFolders();
   const { data: subjects } = useSubjects();
   const createDeck = useCreateDeck();
   const navigate = useNavigate();
@@ -24,6 +26,7 @@ export function NewDeckDialog({
     setColor("pink");
     setSubjectId("");
     setType("classic");
+    setFolderId("");
   }
 
   async function save(thenEdit: boolean) {
@@ -33,6 +36,7 @@ export function NewDeckDialog({
       name: trimmed,
       color,
       subject_id: subjectId || null,
+      folder_id: folderId || null,
       default_type: type,
     });
     reset();
@@ -123,6 +127,25 @@ export function NewDeckDialog({
               ))}
             </select>
           </div>
+        </div>
+
+        <div className="flex flex-col gap-2">
+          <label htmlFor="deck-folder" className="text-sm font-semibold text-muted-foreground">
+            Folder (optional)
+          </label>
+          <select
+            id="deck-folder"
+            value={folderId}
+            onChange={(e) => setFolderId(e.target.value)}
+            className="min-h-12 rounded-2xl border border-border bg-background px-3 text-[15px] outline-none focus:border-brand"
+          >
+            <option value="">No folder</option>
+            {(folders ?? []).map((f) => (
+              <option key={f.id} value={f.id}>
+                {f.name}
+              </option>
+            ))}
+          </select>
         </div>
 
         <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
