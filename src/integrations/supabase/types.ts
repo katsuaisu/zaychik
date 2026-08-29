@@ -66,6 +66,7 @@ export type Database = {
           color: string
           created_at: string
           default_type: string
+          folder_id: string | null
           id: string
           is_public: boolean
           name: string
@@ -76,6 +77,7 @@ export type Database = {
           color?: string
           created_at?: string
           default_type?: string
+          folder_id?: string | null
           id?: string
           is_public?: boolean
           name: string
@@ -86,6 +88,7 @@ export type Database = {
           color?: string
           created_at?: string
           default_type?: string
+          folder_id?: string | null
           id?: string
           is_public?: boolean
           name?: string
@@ -94,6 +97,13 @@ export type Database = {
         }
         Relationships: [
           {
+            foreignKeyName: "decks_folder_id_fkey"
+            columns: ["folder_id"]
+            isOneToOne: false
+            referencedRelation: "folders"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "decks_subject_id_fkey"
             columns: ["subject_id"]
             isOneToOne: false
@@ -101,6 +111,30 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      folders: {
+        Row: {
+          created_at: string
+          id: string
+          name: string
+          position: number
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          name: string
+          position?: number
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          name?: string
+          position?: number
+          user_id?: string
+        }
+        Relationships: []
       }
       profiles: {
         Row: {

@@ -1,0 +1,13 @@
+{
+  "version": "7",
+  "dialect": "postgresql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1788000617072,
+      "tag": "0000_deck_folders",
+      "breakpoints": true
+    }
+  ]
+}
