@@ -15,14 +15,14 @@ import {
 export const Route = createFileRoute("/_authenticated/decks/")({
   head: () => ({
     meta: [
-      { title: "My decks — Gizmo Study" },
+      { title: "My decks — Zaychik" },
       {
         name: "description",
         content:
           "Your flashcard library: organize decks into folders, edit cards and start a study session.",
       },
-      { property: "og:title", content: "My decks — Gizmo Study" },
-      { property: "og:description", content: "Your flashcard library in Gizmo Study." },
+      { property: "og:title", content: "My decks — Zaychik" },
+      { property: "og:description", content: "Your flashcard library in Zaychik." },
     ],
   }),
   component: DecksPage,

@@ -7,16 +7,16 @@ export const Route = createFileRoute("/")({
   ssr: false,
   head: () => ({
     meta: [
-      { title: "Gizmo Study — GWA Calculator & Flashcards" },
+      { title: "Zaychik — GWA Calc + Flashcard" },
       {
         name: "description",
         content:
-          "Compute your GWA quarter by quarter and study your subjects with playful flashcard decks — one study app for both.",
+          "Calculate your GWA and study with flashcards in Zaychik.",
       },
-      { property: "og:title", content: "Gizmo Study — GWA Calculator & Flashcards" },
+      { property: "og:title", content: "Zaychik — GWA Calc + Flashcard" },
       {
         property: "og:description",
-        content: "Compute your GWA and study your subjects with playful flashcard decks.",
+          content: "Calculate your GWA and study with flashcards in Zaychik.",
       },
     ],
   }),
@@ -56,14 +56,8 @@ function Landing() {
             <Sparkles className="h-3.5 w-3.5" /> Grades and flashcards in one place
           </span>
           <h1 className="mt-5 max-w-3xl text-4xl font-extrabold leading-[1.05] tracking-tight sm:text-6xl">
-            Know your GWA.
-            <br />
-            <span className="text-brand">Master every card.</span>
+            GWA CALC + FLASHCARD
           </h1>
-          <p className="mt-5 max-w-xl text-base text-muted-foreground sm:text-lg">
-            Gizmo Study keeps your quarterly grades and your study decks side by side, so tracking
-            your average and actually reviewing happen in the same app.
-          </p>
 
           <div className="mt-8 flex flex-wrap gap-3">
             {signedIn ? (

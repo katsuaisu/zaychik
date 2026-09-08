@@ -9,13 +9,13 @@ export const Route = createFileRoute("/auth")({
   ssr: false,
   head: () => ({
     meta: [
-      { title: "Sign in — Gizmo Study" },
+      { title: "Sign in — Zaychik" },
       {
         name: "description",
         content:
-          "Sign in or create a Gizmo Study account to track your GWA and study your flashcard decks.",
+          "Sign in or create a Zaychik account to track your GWA and study your flashcard decks.",
       },
-      { property: "og:title", content: "Sign in — Gizmo Study" },
+      { property: "og:title", content: "Sign in — Zaychik" },
       {
         property: "og:description",
         content: "Sign in to track your GWA and study your flashcard decks.",

@@ -6,13 +6,13 @@ import { colorHex } from "@/lib/deck-colors";
 export const Route = createFileRoute("/_authenticated/progress")({
   head: () => ({
     meta: [
-      { title: "Progress — Gizmo Study" },
+      { title: "Progress — Zaychik" },
       {
         name: "description",
         content:
           "Track mastered, learning and forgotten cards per deck, plus total XP and your study streak.",
       },
-      { property: "og:title", content: "Progress — Gizmo Study" },
+      { property: "og:title", content: "Progress — Zaychik" },
       { property: "og:description", content: "See how your decks and mastery are trending." },
     ],
   }),

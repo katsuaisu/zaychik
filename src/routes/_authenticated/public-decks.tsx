@@ -9,13 +9,13 @@ import { usePublicDecks, useCopyDeck } from "@/lib/queries";
 export const Route = createFileRoute("/_authenticated/public-decks")({
   head: () => ({
     meta: [
-      { title: "Public decks — Gizmo Study" },
+      { title: "Public decks — Zaychik" },
       {
         name: "description",
         content:
           "Browse flashcard decks shared by other students and copy any of them into your own library.",
       },
-      { property: "og:title", content: "Public decks — Gizmo Study" },
+      { property: "og:title", content: "Public decks — Zaychik" },
       {
         property: "og:description",
         content: "Browse shared flashcard decks and copy them into your library.",
