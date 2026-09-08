@@ -78,19 +78,18 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Gizmo Study — GWA Calculator & Flashcards" },
+      { title: "Zaychik — GWA Calc + Flashcard" },
       {
         name: "description",
-        content: "Track your GWA and study smarter with flashcards, all in one place.",
+        content: "Calculate your GWA and study with flashcards in Zaychik.",
       },
-      { property: "og:title", content: "Gizmo Study — GWA Calculator & Flashcards" },
+      { property: "og:title", content: "Zaychik — GWA Calc + Flashcard" },
       {
         property: "og:description",
-        content: "Track your GWA and study smarter with flashcards, all in one place.",
+        content: "Calculate your GWA and study with flashcards in Zaychik.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:site", content: "@Lovable" },
     ],
     links: [
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -103,7 +102,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         rel: "stylesheet",
         href: appCss,
       },
-      { rel: "icon", href: "/favicon.ico", type: "image/x-icon" },
+      { rel: "icon", href: "/favicon.svg", type: "image/svg+xml" },
     ],
   }),
   shellComponent: RootShell,

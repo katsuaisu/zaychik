@@ -19,12 +19,12 @@ import { CardEditorForm } from "@/components/CardEditorForm";
 export const Route = createFileRoute("/_authenticated/decks/$deckId")({
   head: () => ({
     meta: [
-      { title: "Edit deck — Gizmo Study" },
+      { title: "Edit deck — Zaychik" },
       {
         name: "description",
         content: "Add, edit, reorder and delete flashcards, and tune your deck settings.",
       },
-      { property: "og:title", content: "Edit deck — Gizmo Study" },
+      { property: "og:title", content: "Edit deck — Zaychik" },
       { property: "og:description", content: "Manage the cards inside your study deck." },
     ],
   }),

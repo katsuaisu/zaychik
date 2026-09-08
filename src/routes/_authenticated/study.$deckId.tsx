@@ -21,13 +21,13 @@ import { MatchingCard } from "@/components/study/MatchingCard";
 export const Route = createFileRoute("/_authenticated/study/$deckId")({
   head: () => ({
     meta: [
-      { title: "Study session — Gizmo Study" },
+      { title: "Study session — Zaychik" },
       {
         name: "description",
         content:
           "Run a flashcard study session: flip cards, fill blanks, order events and match pairs.",
       },
-      { property: "og:title", content: "Study session — Gizmo Study" },
+      { property: "og:title", content: "Study session — Zaychik" },
       { property: "og:description", content: "Practice a deck and track your mastery and XP." },
     ],
   }),
