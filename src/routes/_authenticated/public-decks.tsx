@@ -15,7 +15,7 @@ export const Route = createFileRoute("/_authenticated/public-decks")({
         content:
           "Browse flashcard decks shared by other students and copy any of them into your own library.",
       },
-      { property: "og:title", content: "Public decks — Zaychik" },
+      { property: "og:title", content: "Public decks — Gizmo" },
       {
         property: "og:description",
         content: "Browse shared flashcard decks and copy them into your library.",

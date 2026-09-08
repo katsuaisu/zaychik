@@ -24,7 +24,7 @@ export const Route = createFileRoute("/_authenticated/decks/$deckId")({
         name: "description",
         content: "Add, edit, reorder and delete flashcards, and tune your deck settings.",
       },
-      { property: "og:title", content: "Edit deck — Zaychik" },
+      { property: "og:title", content: "Edit deck — Gizmo" },
       { property: "og:description", content: "Manage the cards inside your study deck." },
     ],
   }),

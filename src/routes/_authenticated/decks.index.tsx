@@ -21,8 +21,8 @@ export const Route = createFileRoute("/_authenticated/decks/")({
         content:
           "Your flashcard library: organize decks into folders, edit cards and start a study session.",
       },
-      { property: "og:title", content: "My decks — Zaychik" },
-      { property: "og:description", content: "Your flashcard library in Zaychik." },
+      { property: "og:title", content: "My decks — Gizmo" },
+      { property: "og:description", content: "Your flashcard library in Gizmo." },
     ],
   }),
   component: DecksPage,

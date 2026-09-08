@@ -11,12 +11,12 @@ export const Route = createFileRoute("/")({
       {
         name: "description",
         content:
-          "Calculate your GWA and study with flashcards in Zaychik.",
+          "Calculate your GWA and study with flashcards in Gizmo.",
       },
-      { property: "og:title", content: "Zaychik — GWA Calc + Flashcard" },
+      { property: "og:title", content: "Gizmo — GWA Calc + Flashcard" },
       {
         property: "og:description",
-          content: "Calculate your GWA and study with flashcards in Zaychik.",
+          content: "Calculate your GWA and study with flashcards in Gizmo.",
       },
     ],
   }),

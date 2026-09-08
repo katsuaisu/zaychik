@@ -27,7 +27,7 @@ export const Route = createFileRoute("/_authenticated/study/$deckId")({
         content:
           "Run a flashcard study session: flip cards, fill blanks, order events and match pairs.",
       },
-      { property: "og:title", content: "Study session — Zaychik" },
+      { property: "og:title", content: "Study session — Gizmo" },
       { property: "og:description", content: "Practice a deck and track your mastery and XP." },
     ],
   }),

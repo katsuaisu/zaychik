@@ -1,4 +1,4 @@
-# Zaychik — GWA Calculator + Flashcards
+# Gizmo — GWA Calculator + Flashcards
 
 A study app for students: compute your GWA quarter by quarter, and review your subjects with
 playful flashcard decks (classic, fill-in-the-blanks, matching and ordering cards).

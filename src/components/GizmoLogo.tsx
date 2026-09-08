@@ -10,7 +10,7 @@ export function GizmoLogo({ className = "" }: { className?: string }) {
           strokeLinejoin="round"
         />
       </svg>
-      <span className="text-2xl font-extrabold tracking-tight text-foreground">Zaychik</span>
+      <span className="text-2xl font-extrabold tracking-tight text-foreground">Gizmo</span>
     </div>
   );
 }
