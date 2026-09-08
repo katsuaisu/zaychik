@@ -1,4 +1,3 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
-  <rect width="64" height="64" rx="14" fill="#2d2847"/>
-  <path d="M17 18h31v8L28 45h21v9H15v-8l20-19H17z" fill="#fcd34d"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <image href="https://i.pinimg.com/1200x/1d/27/d4/1d27d480cb340fc6b17f0fefb3db97d8.jpg" width="64" height="64" />
 </svg>
