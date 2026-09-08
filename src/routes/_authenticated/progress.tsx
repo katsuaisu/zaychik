@@ -12,7 +12,7 @@ export const Route = createFileRoute("/_authenticated/progress")({
         content:
           "Track mastered, learning and forgotten cards per deck, plus total XP and your study streak.",
       },
-      { property: "og:title", content: "Progress — Zaychik" },
+      { property: "og:title", content: "Progress — Gizmo" },
       { property: "og:description", content: "See how your decks and mastery are trending." },
     ],
   }),

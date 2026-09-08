@@ -13,9 +13,9 @@ export const Route = createFileRoute("/auth")({
       {
         name: "description",
         content:
-          "Sign in or create a Zaychik account to track your GWA and study your flashcard decks.",
+          "Sign in or create a Gizmo account to track your GWA and study your flashcard decks.",
       },
-      { property: "og:title", content: "Sign in — Zaychik" },
+      { property: "og:title", content: "Sign in — Gizmo" },
       {
         property: "og:description",
         content: "Sign in to track your GWA and study your flashcard decks.",

@@ -30,7 +30,7 @@ export const Route = createFileRoute("/_authenticated/gwa")({
         content:
           "Compute your quarterly GWA with unit weights, fixed grade choices and automatic transmutation.",
       },
-      { property: "og:title", content: "GWA Calculator — Zaychik" },
+      { property: "og:title", content: "GWA Calculator — Gizmo" },
       {
         property: "og:description",
         content: "Quarterly GWA with unit weights and automatic grade computation.",

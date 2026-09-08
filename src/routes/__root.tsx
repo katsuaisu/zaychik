@@ -81,12 +81,12 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { title: "Zaychik — GWA Calc + Flashcard" },
       {
         name: "description",
-        content: "Calculate your GWA and study with flashcards in Zaychik.",
+        content: "Calculate your GWA and study with flashcards in Gizmo.",
       },
-      { property: "og:title", content: "Zaychik — GWA Calc + Flashcard" },
+      { property: "og:title", content: "Gizmo — GWA Calc + Flashcard" },
       {
         property: "og:description",
-        content: "Calculate your GWA and study with flashcards in Zaychik.",
+        content: "Calculate your GWA and study with flashcards in Gizmo.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
