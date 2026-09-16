@@ -1,6 +1,15 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
-import { ArrowLeft, ChevronDown, ChevronUp, Pencil, Play, Plus, Trash2 } from "lucide-react";
+import {
+  ArrowLeft,
+  ChevronDown,
+  ChevronUp,
+  Pencil,
+  Play,
+  Plus,
+  Settings,
+  Trash2,
+} from "lucide-react";
 import {
   useCards,
   useDeck,
@@ -13,7 +22,7 @@ import {
   type Card as DeckCardRow,
 } from "@/lib/queries";
 import { CARD_STATUS, CARD_TYPES, DECK_COLORS, colorHex } from "@/lib/deck-colors";
-import { blankAnswers, matchingPairs, orderItems } from "@/lib/card-data";
+import { blankAnswers, matchingPairs, orderItems, pictureMasks } from "@/lib/card-data";
 import { CardEditorForm } from "@/components/CardEditorForm";
 
 export const Route = createFileRoute("/_authenticated/decks/$deckId")({
@@ -38,6 +47,10 @@ function cardSummary(card: DeckCardRow): string {
       .map((p) => `${p.left} = ${p.right}`)
       .join(" · ");
   if (card.card_type === "blanks") return blankAnswers(card).join(", ");
+  if (card.card_type === "picture") {
+    const covered = pictureMasks(card).length;
+    return card.answer || (covered === 1 ? "1 covered area" : `${covered} covered areas`);
+  }
   return card.answer;
 }
 
@@ -55,6 +68,7 @@ function DeckEditor() {
   const [editing, setEditing] = useState<DeckCardRow | null>(null);
   const [addedCount, setAddedCount] = useState(0);
   const [dragIndex, setDragIndex] = useState<number | null>(null);
+  const [showSettings, setShowSettings] = useState(false);
 
   const list = cards ?? [];
   const accent = colorHex(deck?.color);
@@ -112,11 +126,22 @@ function DeckEditor() {
           >
             <Plus className="h-5 w-5" /> Add card
           </button>
+          <button
+            aria-label="Deck settings"
+            aria-expanded={showSettings}
+            onClick={() => setShowSettings((v) => !v)}
+            className={`grid h-12 w-12 place-items-center rounded-full border border-border press hover:bg-muted/60 ${
+              showSettings ? "bg-muted" : ""
+            }`}
+          >
+            <Settings className="h-5 w-5" />
+          </button>
         </div>
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-[300px_minmax(0,1fr)]">
+      <div className={`grid gap-6 ${showSettings ? "lg:grid-cols-[300px_minmax(0,1fr)]" : ""}`}>
         {/* Deck settings */}
+        {showSettings && (
         <section className="card-soft h-fit p-5">
           <h2 className="text-lg font-extrabold tracking-tight">Deck settings</h2>
 
