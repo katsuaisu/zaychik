@@ -1,7 +1,16 @@
 import { useState } from "react";
 import { Plus, Trash2 } from "lucide-react";
 import { CARD_TYPES } from "@/lib/deck-colors";
-import { blankAnswers, matchingPairs, orderItems, type Pair } from "@/lib/card-data";
+import {
+  blankAnswers,
+  matchingPairs,
+  orderItems,
+  pictureImage,
+  pictureMasks,
+  type Mask,
+  type Pair,
+} from "@/lib/card-data";
+import { PictureCardEditor } from "@/components/PictureCardEditor";
 import type { Card } from "@/lib/queries";
 import type { Json } from "@/integrations/supabase/types";
 
