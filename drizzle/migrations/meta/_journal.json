@@ -8,6 +8,13 @@
       "when": 1788000617072,
       "tag": "0000_deck_folders",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1789530584726,
+      "tag": "0001_card_images_storage_policies",
+      "breakpoints": true
     }
   ]
 }
