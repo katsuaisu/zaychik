@@ -22,6 +22,7 @@ export const CARD_TYPES = [
   { key: "blanks", label: "Fill in the blanks" },
   { key: "order", label: "Order the events" },
   { key: "matching", label: "Matching type" },
+  { key: "picture", label: "Picture card" },
 ] as const;
 
 export type CardType = (typeof CARD_TYPES)[number]["key"];
