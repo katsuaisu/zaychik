@@ -30,6 +30,27 @@ export function matchingPairs(card: Pick<Card, "data">): Pair[] {
     .filter((p) => p.left && p.right);
 }
 
+/** A rectangle covering part of a picture. Values are 0–1 fractions of the image. */
+export type Mask = { x: number; y: number; w: number; h: number };
+
+/** Storage path of a picture card's image. */
+export function pictureImage(card: Pick<Card, "data">): string | null {
+  const raw = (card.data as { image?: unknown })?.image;
+  return typeof raw === "string" && raw ? raw : null;
+}
+
+/** Covered areas of a picture card. */
+export function pictureMasks(card: Pick<Card, "data">): Mask[] {
+  const raw = (card.data as { masks?: unknown })?.masks;
+  if (!Array.isArray(raw)) return [];
+  return raw
+    .map((m) => {
+      const o = m as Record<string, unknown>;
+      return { x: Number(o?.x), y: Number(o?.y), w: Number(o?.w), h: Number(o?.h) };
+    })
+    .filter((m) => [m.x, m.y, m.w, m.h].every((n) => Number.isFinite(n)) && m.w > 0 && m.h > 0);
+}
+
 export function normalize(value: string): string {
   return value.trim().toLowerCase().replace(/\s+/g, " ");
 }

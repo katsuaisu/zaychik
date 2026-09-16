@@ -17,6 +17,7 @@ import { ClassicCard } from "@/components/study/ClassicCard";
 import { BlanksCard } from "@/components/study/BlanksCard";
 import { OrderCard } from "@/components/study/OrderCard";
 import { MatchingCard } from "@/components/study/MatchingCard";
+import { PictureCard } from "@/components/study/PictureCard";
 
 export const Route = createFileRoute("/_authenticated/study/$deckId")({
   head: () => ({
@@ -303,6 +304,8 @@ function CardBody({
   if (card.card_type === "order") return <OrderCard card={card} accent={accent} onResult={onResult} />;
   if (card.card_type === "matching")
     return <MatchingCard card={card} accent={accent} onResult={onResult} />;
+  if (card.card_type === "picture")
+    return <PictureCard card={card} accent={accent} onResult={onResult} />;
   return <ClassicCard card={card} accent={accent} onResult={onResult} />;
 }
 

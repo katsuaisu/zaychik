@@ -1,7 +1,16 @@
 import { useState } from "react";
 import { Plus, Trash2 } from "lucide-react";
 import { CARD_TYPES } from "@/lib/deck-colors";
-import { blankAnswers, matchingPairs, orderItems, type Pair } from "@/lib/card-data";
+import {
+  blankAnswers,
+  matchingPairs,
+  orderItems,
+  pictureImage,
+  pictureMasks,
+  type Mask,
+  type Pair,
+} from "@/lib/card-data";
+import { PictureCardEditor } from "@/components/PictureCardEditor";
 import type { Card } from "@/lib/queries";
 import type { Json } from "@/integrations/supabase/types";
 
@@ -54,6 +63,8 @@ export function CardEditorForm({
     const p = card ? matchingPairs(card) : [];
     return p.length ? p : [{ left: "", right: "" }, { left: "", right: "" }];
   });
+  const [image, setImage] = useState<string | null>(() => (card ? pictureImage(card) : null));
+  const [masks, setMasks] = useState<Mask[]>(() => (card ? pictureMasks(card) : []));
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -67,6 +78,8 @@ export function CardEditorForm({
       { left: "", right: "" },
       { left: "", right: "" },
     ]);
+    setImage(null);
+    setMasks([]);
     setError(null);
   }
 
@@ -90,6 +103,12 @@ export function CardEditorForm({
       if (!prompt.trim()) return "Add the instruction shown above the steps.";
       if (items.map((i) => i.trim()).filter(Boolean).length < 2)
         return "Add at least two steps in their correct order.";
+      return null;
+    }
+    if (type === "picture") {
+      if (!image) return "Upload a picture for this card.";
+      if (masks.length === 0 && !answer.trim())
+        return "Cover a part of the picture, or write an answer.";
       return null;
     }
     if (!prompt.trim()) return "Add the instruction shown above the columns.";
@@ -121,6 +140,11 @@ export function CardEditorForm({
         .filter((p) => p.left && p.right);
       data = { pairs: filled };
       finalAnswer = filled.map((p) => `${p.left} = ${p.right}`).join(" · ");
+    } else if (type === "picture") {
+      data = { image, masks } as unknown as Json;
+      finalAnswer =
+        answer.trim() ||
+        (masks.length === 1 ? "1 covered area" : `${masks.length} covered areas`);
     }
 
     setSaving(true);
@@ -194,6 +218,23 @@ export function CardEditorForm({
           placeholder="Back — Force equals mass times acceleration."
           className={areaClass}
         />
+      )}
+
+      {type === "picture" && (
+        <div className="flex flex-col gap-3">
+          <PictureCardEditor
+            image={image}
+            masks={masks}
+            onImageChange={setImage}
+            onMasksChange={setMasks}
+          />
+          <textarea
+            value={answer}
+            onChange={(e) => setAnswer(e.target.value)}
+            placeholder="Answer or note (optional) — what the covered part is"
+            className={areaClass}
+          />
+        </div>
       )}
 
       {type === "blanks" && (
