@@ -15,6 +15,13 @@
       "when": 1789530584726,
       "tag": "0001_card_images_storage_policies",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1789648152082,
+      "tag": "0002_folders_parent_id",
+      "breakpoints": true
     }
   ]
 }
