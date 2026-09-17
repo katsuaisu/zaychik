@@ -8,13 +8,16 @@ import {
   Menu,
   Plus,
   Search,
+  ChevronDown,
   ChevronRight,
+  Folder as FolderIcon,
   LogOut,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useQueryClient } from "@tanstack/react-query";
 import { GizmoLogo } from "./GizmoLogo";
-import { useDecks } from "@/lib/queries";
+import { useDecks, useFolders } from "@/lib/queries";
+import { buildFolderTree, type FolderNode } from "@/lib/folder-tree";
 import { colorHex } from "@/lib/deck-colors";
 import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { NewDeckDialog } from "./NewDeckDialog";
@@ -32,12 +35,66 @@ function SidebarBody({ onNavigate }: { onNavigate?: () => void }) {
   const [filter, setFilter] = useState("");
   const [searching, setSearching] = useState(false);
   const [newDeck, setNewDeck] = useState(false);
+  const [openFolders, setOpenFolders] = useState<Record<string, boolean>>({});
+  const { data: folders } = useFolders();
   const navigate = useNavigate();
   const qc = useQueryClient();
 
   const list = (decks ?? []).filter((d) =>
     d.name.toLowerCase().includes(filter.trim().toLowerCase()),
   );
+  const tree = buildFolderTree(folders ?? []);
+  const unsorted = list.filter((d) => !d.folder_id);
+
+  function deckLink(deck: (typeof list)[number], depth: number) {
+    return (
+      <Link
+        key={deck.id}
+        to="/decks/$deckId"
+        params={{ deckId: deck.id }}
+        onClick={onNavigate}
+        style={{ paddingLeft: 8 + depth * 14 }}
+        className="flex min-h-11 items-center gap-2 rounded-xl pr-2 text-[15px] font-medium text-foreground press hover:bg-muted/60"
+      >
+        <span
+          className="h-3.5 w-3.5 shrink-0 rounded-[4px]"
+          style={{ backgroundColor: colorHex(deck.color) }}
+        />
+        <span className="min-w-0 flex-1 truncate">{deck.name}</span>
+        <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground" />
+      </Link>
+    );
+  }
+
+  function renderFolder(node: FolderNode): ReactNode {
+    const isOpen = !!openFolders[node.id] || filter.trim().length > 0;
+    const inside = list.filter((d) => d.folder_id === node.id);
+    return (
+      <div key={node.id}>
+        <button
+          onClick={() => setOpenFolders((o) => ({ ...o, [node.id]: !isOpen }))}
+          aria-expanded={isOpen}
+          style={{ paddingLeft: 8 + node.depth * 14 }}
+          className="flex min-h-11 w-full items-center gap-2 rounded-xl pr-2 text-left text-[15px] font-semibold text-foreground press hover:bg-muted/60"
+        >
+          {isOpen ? (
+            <ChevronDown className="h-4 w-4 shrink-0 text-muted-foreground" />
+          ) : (
+            <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground" />
+          )}
+          <FolderIcon className="h-4 w-4 shrink-0 text-muted-foreground" />
+          <span className="min-w-0 flex-1 truncate">{node.name}</span>
+          <span className="shrink-0 text-xs font-bold text-muted-foreground">{inside.length}</span>
+        </button>
+        {isOpen && (
+          <div className="flex flex-col">
+            {node.children.map((child) => renderFolder(child))}
+            {inside.map((deck) => deckLink(deck, node.depth + 1))}
+          </div>
+        )}
+      </div>
+    );
+  }
 
   async function signOut() {
     await qc.cancelQueries();
@@ -127,23 +184,9 @@ function SidebarBody({ onNavigate }: { onNavigate?: () => void }) {
         )}
 
         <div className="flex flex-col">
-          {list.map((deck) => (
-            <Link
-              key={deck.id}
-              to="/decks/$deckId"
-              params={{ deckId: deck.id }}
-              onClick={onNavigate}
-              className="flex min-h-11 items-center gap-2 rounded-xl px-2 text-[15px] font-medium text-foreground press hover:bg-muted/60"
-            >
-              <span
-                className="h-3.5 w-3.5 shrink-0 rounded-[4px]"
-                style={{ backgroundColor: colorHex(deck.color) }}
-              />
-              <span className="min-w-0 flex-1 truncate">{deck.name}</span>
-              <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground" />
-            </Link>
-          ))}
-          {list.length === 0 && (
+          {tree.map((node) => renderFolder(node))}
+          {unsorted.map((deck) => deckLink(deck, 0))}
+          {list.length === 0 && tree.length === 0 && (
             <p className="px-2 py-2 text-sm text-muted-foreground">No decks yet.</p>
           )}
         </div>
