@@ -1,8 +1,17 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
-import { Folder, FolderPlus, Pencil, Plus, Trash2 } from "lucide-react";
+import {
+  ChevronDown,
+  ChevronRight,
+  Folder,
+  FolderPlus,
+  Pencil,
+  Plus,
+  Trash2,
+} from "lucide-react";
 import { DeckCard, DeckGrid } from "@/components/DeckCard";
 import { NewDeckDialog } from "@/components/NewDeckDialog";
+import { buildFolderTree, flattenFolders, type FolderNode } from "@/lib/folder-tree";
 import {
   useCreateFolder,
   useDecks,
@@ -10,6 +19,7 @@ import {
   useFolders,
   useMoveDeckToFolder,
   useRenameFolder,
+  type Deck,
 } from "@/lib/queries";
 
 export const Route = createFileRoute("/_authenticated/decks/")({
@@ -19,7 +29,7 @@ export const Route = createFileRoute("/_authenticated/decks/")({
       {
         name: "description",
         content:
-          "Your flashcard library: organize decks into folders, edit cards and start a study session.",
+          "Your flashcard library: organize decks into folders and subfolders, edit cards and start a study session.",
       },
       { property: "og:title", content: "My decks — Gizmo" },
       { property: "og:description", content: "Your flashcard library in Gizmo." },
@@ -38,16 +48,12 @@ function DecksPage() {
   const [open, setOpen] = useState(false);
   const [newFolder, setNewFolder] = useState("");
   const [adding, setAdding] = useState(false);
+  const [collapsed, setCollapsed] = useState<Record<string, boolean>>({});
 
   const all = decks ?? [];
-  const groups = [
-    ...(folders ?? []).map((f) => ({
-      id: f.id,
-      name: f.name,
-      decks: all.filter((d) => d.folder_id === f.id),
-    })),
-    { id: null as string | null, name: "Unsorted", decks: all.filter((d) => !d.folder_id) },
-  ];
+  const tree = buildFolderTree(folders ?? []);
+  const flat = flattenFolders(tree);
+  const unsorted = all.filter((d) => !d.folder_id);
 
   function folderPicker(deckId: string, folderId: string | null) {
     return (
@@ -59,13 +65,104 @@ function DecksPage() {
           className="min-h-9 flex-1 rounded-xl border border-border bg-background px-2 text-xs font-semibold outline-none focus:border-brand"
         >
           <option value="">No folder</option>
-          {(folders ?? []).map((f) => (
+          {flat.map((f) => (
             <option key={f.id} value={f.id}>
+              {"— ".repeat(f.depth)}
               {f.name}
             </option>
           ))}
         </select>
       </label>
+    );
+  }
+
+  function renderDecks(list: Deck[]) {
+    if (list.length === 0) {
+      return <p className="text-sm text-muted-foreground">No decks in this folder yet.</p>;
+    }
+    return (
+      <DeckGrid>
+        {list.map((deck) => (
+          <DeckCard key={deck.id} deck={deck} action={folderPicker(deck.id, deck.folder_id)} />
+        ))}
+      </DeckGrid>
+    );
+  }
+
+  function renderFolder(node: FolderNode) {
+    const isOpen = !collapsed[node.id];
+    const list = all.filter((d) => d.folder_id === node.id);
+    return (
+      <section
+        key={node.id}
+        className={node.depth > 0 ? "ml-3 border-l border-border pl-4 sm:ml-5 sm:pl-5" : ""}
+      >
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setCollapsed((c) => ({ ...c, [node.id]: isOpen }))}
+            aria-expanded={isOpen}
+            className="flex min-h-11 min-w-0 flex-1 items-center gap-2 rounded-xl px-1 text-left press hover:bg-muted/60"
+          >
+            {isOpen ? (
+              <ChevronDown className="h-4 w-4 shrink-0 text-muted-foreground" />
+            ) : (
+              <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground" />
+            )}
+            <Folder className="h-5 w-5 shrink-0 text-muted-foreground" />
+            <h2 className="truncate text-lg font-extrabold tracking-tight">{node.name}</h2>
+            <span className="text-sm font-semibold text-muted-foreground">{list.length}</span>
+          </button>
+          <div className="flex shrink-0 gap-1">
+            <button
+              aria-label={`Add subfolder in ${node.name}`}
+              onClick={() => {
+                const name = window.prompt(`New folder inside "${node.name}"`)?.trim();
+                if (name)
+                  createFolder.mutate({
+                    name,
+                    parent_id: node.id,
+                    position: node.children.length,
+                  });
+                setCollapsed((c) => ({ ...c, [node.id]: false }));
+              }}
+              className="grid h-9 w-9 place-items-center rounded-xl text-muted-foreground press hover:bg-muted"
+            >
+              <FolderPlus className="h-4 w-4" />
+            </button>
+            <button
+              aria-label={`Rename ${node.name}`}
+              onClick={() => {
+                const name = window.prompt("Rename folder", node.name)?.trim();
+                if (name) renameFolder.mutate({ id: node.id, name });
+              }}
+              className="grid h-9 w-9 place-items-center rounded-xl text-muted-foreground press hover:bg-muted"
+            >
+              <Pencil className="h-4 w-4" />
+            </button>
+            <button
+              aria-label={`Delete ${node.name}`}
+              onClick={() => {
+                if (
+                  window.confirm(
+                    `Delete folder "${node.name}" and its subfolders? Decks are kept.`,
+                  )
+                )
+                  deleteFolder.mutate(node.id);
+              }}
+              className="grid h-9 w-9 place-items-center rounded-xl text-muted-foreground press hover:bg-muted hover:text-destructive"
+            >
+              <Trash2 className="h-4 w-4" />
+            </button>
+          </div>
+        </div>
+
+        {isOpen && (
+          <div className="mt-3 flex flex-col gap-5">
+            {renderDecks(list)}
+            {node.children.map(renderFolder)}
+          </div>
+        )}
+      </section>
     );
   }
 
@@ -95,7 +192,7 @@ function DecksPage() {
       </div>
 
       {adding && (
-        <div className="mb-6 flex flex-wrap items-center gap-2 card-soft p-4">
+        <div className="card-soft mb-6 flex flex-wrap items-center gap-2 p-4">
           <input
             autoFocus
             value={newFolder}
@@ -107,7 +204,7 @@ function DecksPage() {
             onClick={() => {
               const name = newFolder.trim();
               if (!name) return;
-              createFolder.mutate({ name, position: folders?.length ?? 0 });
+              createFolder.mutate({ name, position: tree.length, parent_id: null });
               setNewFolder("");
               setAdding(false);
             }}
@@ -120,7 +217,7 @@ function DecksPage() {
 
       {isLoading ? (
         <p className="text-sm text-muted-foreground">Loading your decks…</p>
-      ) : all.length === 0 ? (
+      ) : all.length === 0 && tree.length === 0 ? (
         <div className="card-soft p-10 text-center">
           <h2 className="text-xl font-extrabold">No decks yet</h2>
           <p className="mt-1 text-sm text-muted-foreground">
@@ -135,58 +232,20 @@ function DecksPage() {
         </div>
       ) : (
         <div className="flex flex-col gap-8">
-          {groups.map((group) => {
-            if (group.id === null && group.decks.length === 0) return null;
-            return (
-              <section key={group.id ?? "unsorted"}>
-                <div className="mb-3 flex items-center gap-2">
-                  <Folder className="h-5 w-5 text-muted-foreground" />
-                  <h2 className="text-lg font-extrabold tracking-tight">{group.name}</h2>
-                  <span className="text-sm font-semibold text-muted-foreground">
-                    {group.decks.length}
-                  </span>
-                  {group.id && (
-                    <div className="ml-auto flex gap-1">
-                      <button
-                        aria-label={`Rename ${group.name}`}
-                        onClick={() => {
-                          const name = window.prompt("Rename folder", group.name)?.trim();
-                          if (name) renameFolder.mutate({ id: group.id!, name });
-                        }}
-                        className="grid h-9 w-9 place-items-center rounded-xl text-muted-foreground press hover:bg-muted"
-                      >
-                        <Pencil className="h-4 w-4" />
-                      </button>
-                      <button
-                        aria-label={`Delete ${group.name}`}
-                        onClick={() => {
-                          if (window.confirm(`Delete folder "${group.name}"? Decks are kept.`))
-                            deleteFolder.mutate(group.id!);
-                        }}
-                        className="grid h-9 w-9 place-items-center rounded-xl text-muted-foreground press hover:bg-muted hover:text-destructive"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </button>
-                    </div>
-                  )}
-                </div>
+          {tree.map(renderFolder)}
 
-                {group.decks.length === 0 ? (
-                  <p className="text-sm text-muted-foreground">No decks in this folder yet.</p>
-                ) : (
-                  <DeckGrid>
-                    {group.decks.map((deck) => (
-                      <DeckCard
-                        key={deck.id}
-                        deck={deck}
-                        action={folderPicker(deck.id, deck.folder_id)}
-                      />
-                    ))}
-                  </DeckGrid>
-                )}
-              </section>
-            );
-          })}
+          {unsorted.length > 0 && (
+            <section>
+              <div className="mb-3 flex items-center gap-2 px-1">
+                <Folder className="h-5 w-5 text-muted-foreground" />
+                <h2 className="text-lg font-extrabold tracking-tight">Unsorted</h2>
+                <span className="text-sm font-semibold text-muted-foreground">
+                  {unsorted.length}
+                </span>
+              </div>
+              {renderDecks(unsorted)}
+            </section>
+          )}
         </div>
       )}
 
