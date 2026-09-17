@@ -56,18 +56,62 @@ export function PictureCardEditor({
     }
   }
 
+  function fromClipboard(items: DataTransferItemList | null | undefined) {
+    if (!items) return undefined;
+    for (const item of Array.from(items)) {
+      if (item.kind === "file" && item.type.startsWith("image/")) {
+        return item.getAsFile() ?? undefined;
+      }
+    }
+    return undefined;
+  }
+
   return (
-    <div className="flex flex-col gap-2">
-      <label className="inline-flex min-h-11 w-fit cursor-pointer items-center gap-2 rounded-full border border-border px-4 text-sm font-bold press hover:bg-muted/60">
-        <ImagePlus className="h-4 w-4" />
-        {uploading ? "Uploading…" : image ? "Replace picture" : "Upload picture"}
+    <div
+      className="flex flex-col gap-2"
+      tabIndex={0}
+      onPaste={(e) => {
+        const file = fromClipboard(e.clipboardData?.items);
+        if (file) {
+          e.preventDefault();
+          void pick(file);
+        }
+      }}
+      onDragOver={(e) => e.preventDefault()}
+      onDrop={(e) => {
+        const file = e.dataTransfer?.files?.[0];
+        if (file?.type.startsWith("image/")) {
+          e.preventDefault();
+          void pick(file);
+        }
+      }}
+    >
+      <div className="flex flex-wrap items-center gap-2">
+        <label className="inline-flex min-h-11 w-fit cursor-pointer items-center gap-2 rounded-full border border-border px-4 text-sm font-bold press hover:bg-muted/60">
+          <ImagePlus className="h-4 w-4" />
+          {uploading ? "Uploading…" : image ? "Replace picture" : "Upload picture"}
+          <input
+            type="file"
+            accept="image/*"
+            className="hidden"
+            onChange={(e) => void pick(e.target.files?.[0])}
+          />
+        </label>
         <input
-          type="file"
-          accept="image/*"
-          className="hidden"
-          onChange={(e) => void pick(e.target.files?.[0])}
+          aria-label="Paste a picture here"
+          readOnly
+          value=""
+          placeholder="…or click here and paste (Ctrl/⌘+V)"
+          onPaste={(e) => {
+            const file = fromClipboard(e.clipboardData?.items);
+            if (file) {
+              e.preventDefault();
+              void pick(file);
+            }
+          }}
+          className="min-h-11 min-w-0 flex-1 rounded-2xl border border-dashed border-border px-3 text-sm outline-none focus:border-brand"
         />
-      </label>
+      </div>
 
       {error && <p className="text-sm font-semibold text-destructive">{error}</p>}
 
