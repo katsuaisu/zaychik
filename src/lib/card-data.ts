@@ -46,7 +46,12 @@ export function pictureMasks(card: Pick<Card, "data">): Mask[] {
   return raw
     .map((m) => {
       const o = m as Record<string, unknown>;
-      return { x: Number(o?.x), y: Number(o?.y), w: Number(o?.w), h: Number(o?.h) };
+      return {
+        x: Number(o?.["x"]),
+        y: Number(o?.["y"]),
+        w: Number(o?.["w"]),
+        h: Number(o?.["h"]),
+      };
     })
     .filter((m) => [m.x, m.y, m.w, m.h].every((n) => Number.isFinite(n)) && m.w > 0 && m.h > 0);
 }

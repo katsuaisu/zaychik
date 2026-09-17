@@ -226,6 +226,8 @@ function DeckEditor() {
             <Trash2 className="h-4 w-4" /> Delete deck
           </button>
         </section>
+        )}
+
 
         {/* Cards */}
         <section className="flex flex-col gap-3">
