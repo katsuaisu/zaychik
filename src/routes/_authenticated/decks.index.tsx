@@ -9,7 +9,7 @@ import {
   Plus,
   Trash2,
 } from "lucide-react";
-import { DeckCard, DeckGrid } from "@/components/DeckCard";
+import { DeckCard, DeckGrid, type DeckWithCount } from "@/components/DeckCard";
 import { NewDeckDialog } from "@/components/NewDeckDialog";
 import { buildFolderTree, flattenFolders, type FolderNode } from "@/lib/folder-tree";
 import {
@@ -19,7 +19,6 @@ import {
   useFolders,
   useMoveDeckToFolder,
   useRenameFolder,
-  type Deck,
 } from "@/lib/queries";
 
 export const Route = createFileRoute("/_authenticated/decks/")({
@@ -76,7 +75,7 @@ function DecksPage() {
     );
   }
 
-  function renderDecks(list: Deck[]) {
+  function renderDecks(list: DeckWithCount[]) {
     if (list.length === 0) {
       return <p className="text-sm text-muted-foreground">No decks in this folder yet.</p>;
     }
