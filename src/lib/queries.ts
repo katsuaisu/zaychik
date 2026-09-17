@@ -23,6 +23,7 @@ export type Folder = {
   id: string;
   name: string;
   position: number;
+  parent_id: string | null;
 };
 
 export type Deck = {
@@ -449,7 +450,7 @@ export function useFolders() {
     queryFn: async (): Promise<Folder[]> => {
       const { data, error } = await supabase
         .from("folders")
-        .select("id,name,position")
+        .select("id,name,position,parent_id")
         .order("position")
         .order("name");
       if (error) throw error;
@@ -461,11 +462,16 @@ export function useFolders() {
 export function useCreateFolder() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: async (input: { name: string; position?: number }) => {
+    mutationFn: async (input: { name: string; position?: number; parent_id?: string | null }) => {
       const user_id = await uid();
       const { data, error } = await supabase
         .from("folders")
-        .insert({ user_id, name: input.name, position: input.position ?? 0 })
+        .insert({
+          user_id,
+          name: input.name,
+          position: input.position ?? 0,
+          parent_id: input.parent_id ?? null,
+        })
         .select("id")
         .single();
       if (error) throw error;
