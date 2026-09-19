@@ -12,11 +12,17 @@ import {
 } from "lucide-react";
 import { DeckCard, DeckGrid, type DeckWithCount } from "@/components/DeckCard";
 import { NewDeckDialog } from "@/components/NewDeckDialog";
-import { buildFolderTree, flattenFolders, type FolderNode } from "@/lib/folder-tree";
+import {
+  buildFolderTree,
+  flattenFolders,
+  folderSubtreeIds,
+  type FolderNode,
+} from "@/lib/folder-tree";
 import {
   useCreateFolder,
   useDecks,
   useDeleteFolder,
+  useDeleteFolderWithDecks,
   useFolders,
   useMoveDeckToFolder,
   useRenameFolder,
