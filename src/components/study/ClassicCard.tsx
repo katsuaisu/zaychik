@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { RotateCw } from "lucide-react";
 import type { Card } from "@/lib/queries";
 import { playSound } from "@/lib/sounds";
+import { AnswerText } from "./AnswerText";
 
 export function ClassicCard({
   card,
@@ -29,9 +30,9 @@ export function ClassicCard({
         <p className="text-xs font-bold uppercase tracking-wide text-muted-foreground">
           {flipped ? "Answer" : "Question"}
         </p>
-        <p className="mt-3 text-xl font-extrabold leading-snug sm:text-2xl">
-          {flipped ? card.answer : card.prompt}
-        </p>
+        <div className="mt-3 text-xl font-extrabold leading-snug sm:text-2xl">
+          <AnswerText text={flipped ? card.answer : card.prompt} />
+        </div>
         <p className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-muted-foreground">
           <RotateCw className="h-4 w-4" /> Tap to flip
         </p>
