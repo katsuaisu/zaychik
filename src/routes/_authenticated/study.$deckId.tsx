@@ -12,12 +12,13 @@ import {
 import { useCards, useDeck, useSaveResult, useSetCardStatus, type Card } from "@/lib/queries";
 import { CARD_STATUS, colorHex } from "@/lib/deck-colors";
 import { playSound, setSoundEnabled, soundEnabled } from "@/lib/sounds";
-import { shuffle } from "@/lib/card-data";
+import { blankAnswers, shuffle, splitBlanks } from "@/lib/card-data";
 import { ClassicCard } from "@/components/study/ClassicCard";
 import { BlanksCard } from "@/components/study/BlanksCard";
 import { OrderCard } from "@/components/study/OrderCard";
 import { MatchingCard } from "@/components/study/MatchingCard";
 import { PictureCard } from "@/components/study/PictureCard";
+import { ChoiceCard } from "@/components/study/ChoiceCard";
 
 export const Route = createFileRoute("/_authenticated/study/$deckId")({
   head: () => ({
@@ -54,12 +55,23 @@ function StudyRunner() {
   const [saved, setSaved] = useState(false);
   const [muted, setMuted] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
+  const [choiceMode, setChoiceMode] = useState(false);
   const [round, setRound] = useState(0);
 
   useEffect(() => setMuted(!soundEnabled()), []);
 
   // Every session (and every replay) shows the cards in a fresh random order.
   const list = useMemo(() => shuffle(cards ?? []), [cards, round]);
+
+  /** Every answer in the deck, used as the wrong options in multiple choice. */
+  const answerPool = useMemo(() => {
+    const out: string[] = [];
+    for (const c of cards ?? []) {
+      if (c.card_type === "classic") out.push(c.answer);
+      else if (c.card_type === "blanks") out.push(...blankAnswers(c));
+    }
+    return out.filter((a) => a.trim());
+  }, [cards]);
   const total = list.length;
   const current: Card | undefined = list[index];
   const accent = colorHex(deck?.color);
