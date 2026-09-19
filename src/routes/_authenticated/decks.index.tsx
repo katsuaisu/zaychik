@@ -50,6 +50,7 @@ function DecksPage() {
   const createFolder = useCreateFolder();
   const renameFolder = useRenameFolder();
   const deleteFolder = useDeleteFolder();
+  const deleteFolderWithDecks = useDeleteFolderWithDecks();
   const moveDeck = useMoveDeckToFolder();
   const [open, setOpen] = useState(false);
   const [newFolder, setNewFolder] = useState("");
