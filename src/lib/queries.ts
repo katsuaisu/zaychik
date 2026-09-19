@@ -509,6 +509,39 @@ export function useDeleteFolder() {
   });
 }
 
+/** Delete folders (and nested ones) together with every deck inside them. */
+export function useDeleteFolderWithDecks() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (folderIds: string[]) => {
+      if (folderIds.length === 0) return;
+      const { data: deckRows, error: deckErr } = await supabase
+        .from("decks")
+        .select("id")
+        .in("folder_id", folderIds);
+      if (deckErr) throw deckErr;
+      const deckIds = (deckRows ?? []).map((d) => d.id);
+      if (deckIds.length > 0) {
+        const { error: cardErr } = await supabase.from("cards").delete().in("deck_id", deckIds);
+        if (cardErr) throw cardErr;
+        const { error: resErr } = await supabase
+          .from("study_results")
+          .delete()
+          .in("deck_id", deckIds);
+        if (resErr) throw resErr;
+        const { error: dErr } = await supabase.from("decks").delete().in("id", deckIds);
+        if (dErr) throw dErr;
+      }
+      const { error } = await supabase.from("folders").delete().in("id", folderIds);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["folders"] });
+      qc.invalidateQueries({ queryKey: ["decks"] });
+    },
+  });
+}
+
 export function useMoveDeckToFolder() {
   const qc = useQueryClient();
   return useMutation({

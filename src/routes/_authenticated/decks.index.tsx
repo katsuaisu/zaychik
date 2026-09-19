@@ -5,17 +5,24 @@ import {
   ChevronRight,
   Folder,
   FolderPlus,
+  FolderX,
   Pencil,
   Plus,
   Trash2,
 } from "lucide-react";
 import { DeckCard, DeckGrid, type DeckWithCount } from "@/components/DeckCard";
 import { NewDeckDialog } from "@/components/NewDeckDialog";
-import { buildFolderTree, flattenFolders, type FolderNode } from "@/lib/folder-tree";
+import {
+  buildFolderTree,
+  flattenFolders,
+  folderSubtreeIds,
+  type FolderNode,
+} from "@/lib/folder-tree";
 import {
   useCreateFolder,
   useDecks,
   useDeleteFolder,
+  useDeleteFolderWithDecks,
   useFolders,
   useMoveDeckToFolder,
   useRenameFolder,
@@ -43,6 +50,7 @@ function DecksPage() {
   const createFolder = useCreateFolder();
   const renameFolder = useRenameFolder();
   const deleteFolder = useDeleteFolder();
+  const deleteFolderWithDecks = useDeleteFolderWithDecks();
   const moveDeck = useMoveDeckToFolder();
   const [open, setOpen] = useState(false);
   const [newFolder, setNewFolder] = useState("");
@@ -139,7 +147,8 @@ function DecksPage() {
               <Pencil className="h-4 w-4" />
             </button>
             <button
-              aria-label={`Delete ${node.name}`}
+              aria-label={`Delete ${node.name}, keep decks`}
+              title="Delete folder, keep decks"
               onClick={() => {
                 if (
                   window.confirm(
@@ -151,6 +160,25 @@ function DecksPage() {
               className="grid h-9 w-9 place-items-center rounded-xl text-muted-foreground press hover:bg-muted hover:text-destructive"
             >
               <Trash2 className="h-4 w-4" />
+            </button>
+            <button
+              aria-label={`Delete ${node.name} and its decks`}
+              title="Delete folder and everything inside"
+              onClick={() => {
+                const ids = folderSubtreeIds(node);
+                const count = all.filter((d) => d.folder_id && ids.includes(d.folder_id)).length;
+                if (
+                  window.confirm(
+                    `Delete folder "${node.name}", its subfolders and ${count} ${
+                      count === 1 ? "deck" : "decks"
+                    } with all their cards? This cannot be undone.`,
+                  )
+                )
+                  deleteFolderWithDecks.mutate(ids);
+              }}
+              className="grid h-9 w-9 place-items-center rounded-xl text-muted-foreground press hover:bg-destructive/10 hover:text-destructive"
+            >
+              <FolderX className="h-4 w-4" />
             </button>
           </div>
         </div>
