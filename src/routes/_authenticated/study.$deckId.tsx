@@ -189,15 +189,31 @@ function StudyRunner() {
       </header>
 
       {showSettings && (
-        <div className="mx-4 mt-3 flex items-center justify-between gap-3 rounded-2xl border border-border bg-card px-4 py-3 sm:mx-6">
-          <span className="text-sm font-semibold">Sound effects</span>
-          <button
-            onClick={toggleMute}
-            className="inline-flex min-h-10 items-center gap-2 rounded-full border border-border px-4 text-sm font-bold press hover:bg-muted/60"
-          >
-            {muted ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
-            {muted ? "Muted" : "On"}
-          </button>
+        <div className="mx-4 mt-3 flex flex-col gap-3 rounded-2xl border border-border bg-card px-4 py-3 sm:mx-6">
+          <div className="flex items-center justify-between gap-3">
+            <span className="text-sm font-semibold">Sound effects</span>
+            <button
+              onClick={toggleMute}
+              className="inline-flex min-h-10 items-center gap-2 rounded-full border border-border px-4 text-sm font-bold press hover:bg-muted/60"
+            >
+              {muted ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
+              {muted ? "Muted" : "On"}
+            </button>
+          </div>
+          <div className="flex items-center justify-between gap-3">
+            <span className="text-sm font-semibold">Multiple choice</span>
+            <button
+              onClick={() => setChoiceMode((v) => !v)}
+              className={`inline-flex min-h-10 items-center gap-2 rounded-full border px-4 text-sm font-bold press ${
+                choiceMode
+                  ? "border-transparent bg-brand text-brand-foreground"
+                  : "border-border hover:bg-muted/60"
+              }`}
+            >
+              <ListChecks className="h-4 w-4" />
+              {choiceMode ? "On" : "Off"}
+            </button>
+          </div>
         </div>
       )}
 
@@ -258,7 +274,14 @@ function StudyRunner() {
           current && (
             <div className="flex flex-col gap-4">
               <StatusLabel status={current.status} />
-              <CardBody key={`${current.id}-${round}`} card={current} accent={accent} onResult={handleResult} />
+              <CardBody
+                key={`${current.id}-${round}-${choiceMode}`}
+                card={current}
+                accent={accent}
+                choiceMode={choiceMode}
+                pool={answerPool}
+                onResult={handleResult}
+              />
             </div>
           )
         )}
@@ -306,18 +329,51 @@ function StatusLabel({ status }: { status: string }) {
 function CardBody({
   card,
   accent,
+  choiceMode,
+  pool,
   onResult,
 }: {
   card: Card;
   accent: string;
+  choiceMode: boolean;
+  pool: string[];
   onResult: (correct: boolean) => void;
 }) {
-  if (card.card_type === "blanks") return <BlanksCard card={card} accent={accent} onResult={onResult} />;
+  if (card.card_type === "blanks") {
+    const answers = blankAnswers(card);
+    // Multiple choice only fits a sentence with a single blank.
+    if (choiceMode && answers.length === 1 && pool.length > 1) {
+      const question = splitBlanks(card.prompt).join(" ______ ");
+      return (
+        <ChoiceCard
+          card={card}
+          accent={accent}
+          answer={answers[0]!}
+          question={question}
+          pool={pool}
+          onResult={onResult}
+        />
+      );
+    }
+    return <BlanksCard card={card} accent={accent} onResult={onResult} />;
+  }
   if (card.card_type === "order") return <OrderCard card={card} accent={accent} onResult={onResult} />;
   if (card.card_type === "matching")
     return <MatchingCard card={card} accent={accent} onResult={onResult} />;
   if (card.card_type === "picture")
     return <PictureCard card={card} accent={accent} onResult={onResult} />;
+  if (choiceMode && card.answer.trim() && pool.length > 1) {
+    return (
+      <ChoiceCard
+        card={card}
+        accent={accent}
+        answer={card.answer}
+        question={card.prompt}
+        pool={pool}
+        onResult={onResult}
+      />
+    );
+  }
   return <ClassicCard card={card} accent={accent} onResult={onResult} />;
 }
 
