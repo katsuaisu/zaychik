@@ -5,6 +5,7 @@ import {
   ChevronRight,
   Folder,
   FolderPlus,
+  FolderX,
   Pencil,
   Plus,
   Trash2,
