@@ -212,12 +212,18 @@ export function CardEditorForm({
       />
 
       {type === "classic" && (
-        <textarea
-          value={answer}
-          onChange={(e) => setAnswer(e.target.value)}
-          placeholder="Back — Force equals mass times acceleration."
-          className={areaClass}
-        />
+        <div className="flex flex-col gap-1">
+          <textarea
+            value={answer}
+            onChange={(e) => setAnswer(e.target.value)}
+            rows={4}
+            placeholder={"Back — write as much as you need.\n- one definition\n- another definition"}
+            className={`${areaClass} min-h-32`}
+          />
+          <span className="text-xs text-muted-foreground">
+            Press Enter for a new line. Start lines with “-” to make bullet points.
+          </span>
+        </div>
       )}
 
       {type === "picture" && (
